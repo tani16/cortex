@@ -64,8 +64,38 @@ public class mainApp {
 	
 	private static void lecturaPaso(ArrayList<String> lineasPaso) {
 		// TODO Auto-generated method stub
+		int index = 0;
+		for(int i = 0; i < lineasPaso.size(); i++) {
+			do {
+				System.out.println(index);
+				index = lineasPaso.get(i).indexOf("=", index);
+
+				System.out.println(index);
+				if (index != -1) {
+					if (lineasPaso.get(i).charAt(index + 1) != '(') {
+						String clave;
+						clave = lecturaClave(lineasPaso.get(i), index);
+					}
+					index ++;
+				}
+			} while (index != -1);			
+		}
 		
+	}
+
+
+	private static String lecturaClave(String linea, int fin) {
+		// TODO Auto-generated method stub
+		String clave = null;
 		
+		for(int i = fin; i >= 0; i--) {
+			if (linea.charAt(i) == ' ' || linea.charAt(i) == ',' || linea.charAt(i) == '(') {
+				clave = linea.substring(i + 1,fin);
+				System.out.println(clave);
+				i = -1;
+			}
+		}
+		return clave;
 	}
 
 
