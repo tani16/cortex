@@ -50,6 +50,47 @@ public class WriterPasos {
 	    for (int i = 1; datos.containsKey("Entrada" + String.valueOf(i)); i++) {
 	    	writeJFICHENT(datos, numeroPaso, i, letraPaso, writerCortex);
 	    }
+//--------------- Miramos si hay ficheros de Salida:
+	    for (int i = 1; datos.containsKey("Salida" + String.valueOf(i)); i++) {
+	    	writeJFICHSAL(datos, numeroPaso, i, letraPaso, writerCortex);
+	    }
+	}
+
+	private void writeJFICHSAL(Map<String, String> datos, String numeroPaso, int i, String letraPaso,
+			BufferedWriter writerCortex) throws IOException {
+		// TODO Auto-generated method stub
+		//----------------Fichero de plantilla JFICHENT--------------------------
+	    FileReader ficheroJFICHSAL = new FileReader("C:\\Users\\0014879\\Desktop\\Cortex\\Plantillas\\JFICHSAL.txt");
+	    BufferedReader lectorJFICHSAL = new BufferedReader(ficheroJFICHSAL);	
+	    //----------------Variables------------------------------------------
+	    String linea, nombre;
+	    int contadorLinea = 0;
+	    
+	    //----------------Método---------------------------------------------
+	    nombre = datos.get("Salida" + String.valueOf(i));
+	    for(int j = nombre.length(); j < 8; j++) {
+			nombre += " ";
+		}
+	    while((linea = lectorJFICHSAL.readLine()) != null) {
+	    	contadorLinea ++;
+	    	switch (contadorLinea) {
+	    	case 8:
+	    		linea = linea.replace("DDNAME--", nombre);
+	    		break;
+	    	case 14:
+	    		linea = linea.replace("DDNAME--", nombre);
+	    		break;
+	    	case 19:
+	    		linea = linea.replace("DDNAME--", nombre);
+	    		break;
+	    	default:
+				break;
+	    	}
+	    	System.out.println("Escribimos: " + linea);
+	    	writerCortex.write(linea);
+	    	writerCortex.newLine();
+	    }
+	    lectorJFICHSAL.close();	 
 	}
 
 	private void writeJFICHENT(Map<String, String> datos, String numeroPaso, int i, String letraPaso, BufferedWriter writerCortex) throws IOException {
@@ -178,5 +219,43 @@ public class WriterPasos {
 			    	writerCortex.newLine();
 			    }
 			    lectorMAILTXT.close();		
+	}
+
+	public void writeSORT(Map<String, String> datos, String letraPaso, int paso, BufferedWriter writerCortex) throws IOException {
+		// TODO Auto-generated method stub
+		//----------------Fichero de plantilla DB2--------------------------
+	    FileReader ficheroJSORT = new FileReader("C:\\Users\\0014879\\Desktop\\Cortex\\Plantillas\\JSORT.txt");
+	    BufferedReader lectorJSORT = new BufferedReader(ficheroJSORT);	
+	    //----------------Variables------------------------------------------
+	    String linea;
+	    paso++;
+	    String numeroPaso = (paso < 10) ? "0" + String.valueOf(paso) : String.valueOf(paso) ;
+	    int contadorLinea = 0;
+	    int contadorArchivos = 0;
+	    int i = 1;
+	    
+	    //----------------Método---------------------------------------------
+	    
+	    //---------------- Escribimos la plantilla JDB2
+	    while((linea = lectorJSORT.readLine()) != null) {
+	    	contadorLinea ++;
+	    	switch (contadorLinea) {
+	    	case 2:
+	    		linea = linea.replace("//---D1", "//" + letraPaso + numeroPaso + "D" + String.valueOf(i));
+	    		i++;
+				break;
+	    	case 4:
+	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		break;
+	    	case 11:
+	    		linea = linea.replace("FIELDS=(X,XX,XX,X)", datos.get("SORT"));
+			default:
+				break;
+			}
+	    	System.out.println("Escribimos: " + linea);
+	    	writerCortex.write(linea);
+	    	writerCortex.newLine();
+	    }
+	    lectorJSORT.close();
 	}
 }

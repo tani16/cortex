@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class LectorPasos {
 
-	public Map<String, String> leerDB2(ArrayList<String> pasos) {
+	public Map<String, String> leerPaso(ArrayList<String> pasos) {
 		// TODO Auto-generated method stub
 		Map<String, String> datos = new HashMap<String, String>();
 		String clave, valor;
@@ -12,6 +12,7 @@ public class LectorPasos {
 		int archivosEntrada = 0, archivosSalida = 0;
 		
 		for(int i = 0; i < pasos.size(); i++) {
+			index = 0;
 			if (!pasos.get(i).startsWith("CUADRE")) {
 // ------------- Buscamos las variables, con la referencia del igual	
 				if (!pasos.get(i).contains("FILE")) {
@@ -45,13 +46,23 @@ public class LectorPasos {
 						datos.put(clave, valor);
 					}	
 				}
+//---------------- Buscamos el valor para los SORTS
+				if (pasos.get(i).contains("SORT FIELDS")) {
+					clave = "SORT";
+					index = pasos.get(i).indexOf("FIELDS=");
+					for (int j = index; j < pasos.get(i).length(); j++) {
+						if(pasos.get(i).charAt(j) == ')') {
+							valor = pasos.get(i).substring(index, j+1);
+							datos.put(clave, valor);
+						}
+					}
+				}
 // --------------- Buscar reportes				
 			}	
 		}
 
 		return datos;
 	}
-
 
 	private String leerArchivoSalida(String linea, Map<String, String> datos, int archivosSalida) {
 		// TODO Auto-generated method stub
@@ -75,7 +86,6 @@ public class LectorPasos {
 		
 		return valor;
 	}
-
 
 	private String leerArchivoEntrada(String linea) {
 		// TODO Auto-generated method stub		

@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class mainApp {
 
-	public static String programa = "COM01PPCL";
+	public static String programa = "COM05IPCL";
 	public static Map<String, String> datos = new HashMap<String, String>();
 	static String letraPaso = programa.substring(5,6);
 	static int paso = 0;
@@ -58,14 +58,15 @@ public class mainApp {
 // ------------ Para cada paso, leemos el tipo de paso y escribimos su correspondiente plantilla
 		    switch (tipoPaso) {
 			case "DB2":
-				datos = lectorPasos.leerDB2(pasos);
+				datos = lectorPasos.leerPaso(pasos);
 				writerPasos.writeDB2(datos, letraPaso, paso, writerCortex);
 				break;	
 			case "NAME=MAILTXT":
-				datos = lectorPasos.leerDB2(pasos);
+				datos = lectorPasos.leerPaso(pasos);
 				writerPasos.writeMAILTXT(datos, letraPaso, paso, writerCortex);
-			case "":
-				//Evaluar Sort
+			case "SORT":
+				datos = lectorPasos.leerPaso(pasos);
+				writerPasos.writeSORT(datos, letraPaso, paso, writerCortex);
 				break;
 			default:
 				writerCortex.write("**************************************************");
@@ -132,6 +133,10 @@ public class mainApp {
 					tipoPaso = fichero.get(inicio).substring(index + 8, i);
 					i = 80;
 				}				
+			}
+		}else {
+			if (fichero.get(inicio).contains(" SORT ")) {
+				tipoPaso = "SORT";
 			}
 		}
 		
