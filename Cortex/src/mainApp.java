@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class mainApp {
 
-	public static String programa = "COM05FPCL";
+	public static String programa = "COM01PPCL";
 	public static Map<String, String> datos = new HashMap<String, String>();
 	static String letraPaso = programa.substring(5,6);
 	static int paso = 0;
@@ -41,28 +41,29 @@ public class mainApp {
 	     
 //------------------------------------PROGRAMA--------------------------------------------------
 	    	    
-//--------------Escribimos la cabecera
+//------------- Escribimos la cabecera
 	    escribeJJOB(writerCortex);
 
-//--------------Pasamos todo el fichero a un arraylist	
-	    
+//------------- Pasamos todo el fichero a un arraylist	
 	    while((linea = lectorPCL.readLine())!=null) {
 	    	fichero.add(linea);	 
 	    }
 	    lectorPCL.close();
-	    // Aislo el paso
+// ------------ Aislamos el paso
 	    while (seguir) {
 		    tipoPaso = aislamientoDePaso();
 		    for (int i = 0; i < pasos.size(); i++) {
 		    	System.out.println(pasos.get(i));
 		    }
-		    
+// ------------ Para cada paso, leemos el tipo de paso y escribimos su correspondiente plantilla
 		    switch (tipoPaso) {
 			case "DB2":
 				datos = lectorPasos.leerDB2(pasos);
 				writerPasos.writeDB2(datos, letraPaso, paso, writerCortex);
-				break;
-			
+				break;	
+			case "NAME=MAILTXT":
+				datos = lectorPasos.leerDB2(pasos);
+				writerPasos.writeMAILTXT(datos, letraPaso, paso, writerCortex);
 			case "":
 				//Evaluar Sort
 				break;
@@ -73,7 +74,6 @@ public class mainApp {
 				writerCortex.newLine();
 				writerCortex.write("**************************************************");
 				writerCortex.newLine();
-				
 				break;
 			}
 		    paso += 2;
@@ -109,9 +109,17 @@ public class mainApp {
 		pasos.clear();
 		
 		for(int i = inicio; i < fin; i++) {
+			String aux = "";
 			String linea = fichero.get(i);
+			if (linea.length() >= 71) {
+				linea = linea.substring(0, 71);
+			}
 			for (int j = i + 1; j < fichero.size() && fichero.get(j).startsWith(" "); j++) {
-				linea = linea.substring(0, 71) + fichero.get(j).trim();
+				if(fichero.get(j).endsWith("X")) {
+					linea = linea + fichero.get(j).substring(0, fichero.get(j).length()-1).trim();
+				}else {
+					linea = linea + fichero.get(j).trim();
+				}
 				i = j;
 			}
 			pasos.add(linea);

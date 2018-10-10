@@ -9,27 +9,84 @@ public class LectorPasos {
 		Map<String, String> datos = new HashMap<String, String>();
 		String clave, valor;
 		int index = 0;
+		int archivosEntrada = 0, archivosSalida = 0;
 		
 		for(int i = 0; i < pasos.size(); i++) {
 			if (!pasos.get(i).startsWith("CUADRE")) {
-				while (index != -1) {
-					index = pasos.get(i).indexOf('=', index);
-					if (index != -1 && pasos.get(i).charAt(index + 1) != '(') {
-						clave = leerClave(pasos.get(i), index);
-						valor = leerValor(pasos.get(i), index);
-						if (!clave.equals("") && !valor.equals("")) {
-							datos.put(clave, valor);
+// ------------- Buscamos las variables, con la referencia del igual	
+				if (!pasos.get(i).contains("FILE")) {
+					while (index != -1) {
+						index = pasos.get(i).indexOf('=', index);
+						if (index != -1 && pasos.get(i).charAt(index + 1) != '(') {
+							clave = leerClave(pasos.get(i), index);
+							valor = leerValor(pasos.get(i), index);
+							if (!clave.equals("") && !valor.equals("")) {
+								datos.put(clave, valor);
+							}
+						}
+						if (index != - 1) {
+							index ++;
 						}
 					}
-					if (index != - 1) {
-						index ++;
-					}
+				}else {
+// -------------- Buscamos los posibles archivos
+					index = 0;
+					index = pasos.get(i).indexOf("MODE=") + 5;
+					System.out.println(pasos.get(i).charAt(index));
+					if (pasos.get(i).charAt(index) == 'I') {
+						archivosEntrada++;
+						valor = leerArchivoEntrada(pasos.get(i));
+						clave = "Entrada" + String.valueOf(archivosEntrada);
+						datos.put(clave, valor);
+					}else {
+						archivosSalida++;
+						clave = "Salida" + String.valueOf(archivosSalida);
+						valor = leerArchivoSalida(pasos.get(i), datos, archivosSalida);
+						datos.put(clave, valor);
+					}	
 				}
+// --------------- Buscar reportes				
 			}	
 		}
-				
-		
+
 		return datos;
+	}
+
+
+	private String leerArchivoSalida(String linea, Map<String, String> datos, int archivosSalida) {
+		// TODO Auto-generated method stub
+		String valor = "";
+		String claveB = "";
+		String valorB = "";
+		
+		for(int i = 0; i < linea.length(); i++) {
+			if(linea.charAt(i) == ' ') {
+				valor = linea.substring(0, i);
+				i = linea.length() + 1;
+			}
+		}
+		claveB = "Borrar" + String.valueOf(archivosSalida);
+		if (linea.contains("(YES,DELETE")) {
+			valorB = "Si";
+		}else {
+			valorB = "No";
+		}
+		datos.put(claveB, valorB);	
+		
+		return valor;
+	}
+
+
+	private String leerArchivoEntrada(String linea) {
+		// TODO Auto-generated method stub		
+		String valor = "";
+		for(int i = 0; i < linea.length(); i++) {
+			if(linea.charAt(i) == ' ') {
+				valor = linea.substring(0, i);
+				i = linea.length() + 1;
+			}
+		}
+		return valor;
 	}
 
 	private String leerValor(String linea, int index) {
@@ -43,6 +100,7 @@ public class LectorPasos {
 					i = linea.length() + 1;
 				}
 			}
+			//evitar, solo se hará replace al insertar la variable correspondiente
 			valor = linea.substring(index + 2, fin).replace(',', '-');
 		}else{
 			for(int i = index; i < linea.length(); i++) {
