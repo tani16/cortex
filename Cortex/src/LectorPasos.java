@@ -9,7 +9,7 @@ public class LectorPasos {
 		Map<String, String> datos = new HashMap<String, String>();
 		String clave, valor;
 		int index = 0;
-		int archivosEntrada = 0, archivosSalida = 0;
+		int archivosEntrada = 0, archivosSalida = 0, comentarios = 0;
 		
 		for(int i = 0; i < pasos.size(); i++) {
 			index = 0;
@@ -56,6 +56,13 @@ public class LectorPasos {
 							datos.put(clave, valor);
 						}
 					}
+				}
+// --------------- Buscamos comentarios
+				if(pasos.get(i).startsWith("*")) {
+					comentarios++;
+					clave = "Comentario" + String.valueOf(comentarios);
+					valor = pasos.get(i);
+					datos.put(clave, valor);
 				}
 // --------------- Buscar reportes				
 			}	

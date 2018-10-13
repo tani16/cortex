@@ -13,10 +13,10 @@ import java.util.Map;
 
 public class mainApp {
 
-	public static String programa = "COM05IPCL";
+	public static String programa = "COF20EPCL";
 	public static Map<String, String> datos = new HashMap<String, String>();
 	static String letraPaso = programa.substring(5,6);
-	static int paso = 0;
+	static int paso = -2;
 	static ArrayList<String> fichero = new ArrayList<String>();
 	static ArrayList<String> pasos = new ArrayList<String>();
 	static int lineNumber = 0;
@@ -52,11 +52,21 @@ public class mainApp {
 // ------------ Aislamos el paso
 	    while (seguir) {
 		    tipoPaso = aislamientoDePaso();
+		    //Verificación aislamiento
+		    System.out.println("El paso es: ");
 		    for (int i = 0; i < pasos.size(); i++) {
 		    	System.out.println(pasos.get(i));
 		    }
 // ------------ Para cada paso, leemos el tipo de paso y escribimos su correspondiente plantilla
 		    switch (tipoPaso) {
+		    case "Inicio":
+				for(int i = 0; i < pasos.size(); i++) {
+					if (pasos.get(i).startsWith("*")){
+						writerCortex.write("//" + pasos.get(i));
+						writerCortex.newLine();
+					}
+				}
+				break;
 			case "DB2":
 				datos = lectorPasos.leerPaso(pasos);
 				writerPasos.writeDB2(datos, letraPaso, paso, writerCortex);
@@ -64,6 +74,7 @@ public class mainApp {
 			case "NAME=MAILTXT":
 				datos = lectorPasos.leerPaso(pasos);
 				writerPasos.writeMAILTXT(datos, letraPaso, paso, writerCortex);
+				break;
 			case "SORT":
 				datos = lectorPasos.leerPaso(pasos);
 				writerPasos.writeSORT(datos, letraPaso, paso, writerCortex);
@@ -85,7 +96,6 @@ public class mainApp {
 	    writerCortex.close();
 	}
 
-
 	private static String aislamientoDePaso() {
 // Si se acaba hacer un booleano de fin fichero
 		int inicio = 0, fin = 0, index = 0;
@@ -101,6 +111,10 @@ public class mainApp {
 	    	if(fichero.get(i).startsWith(letraPaso + String.valueOf(numeroPasoSiguiente))) {
 	    		fin = i;
 	    		i = fichero.size() + 1;
+	    	}
+	    	if(i == 0) {
+	    		inicio = 0;
+	    		tipoPaso = "Inicio";
 	    	}
 	    	if(i + 1 == fichero.size()) {
 	    		fin = i;
