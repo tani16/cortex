@@ -1,23 +1,23 @@
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
 
 public class WriterPasos {
+	
+	MetodosAux metodosAux = new MetodosAux();
 
 	public void writeDB2(Map<String, String> datos, String letraPaso, int paso, BufferedWriter writerCortex) throws IOException {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla DB2--------------------------
-	    FileReader ficheroDB2 = new FileReader("C:\\Users\\0014879\\Desktop\\Cortex\\Plantillas\\JDB2.txt");
+	    FileReader ficheroDB2 = new FileReader("C:\\Cortex\\Plantillas\\JDB2.txt");
 	    BufferedReader lectorDB2 = new BufferedReader(ficheroDB2);	
 	    //----------------Variables------------------------------------------
 	    String linea;
 	    paso++;
 	    String numeroPaso = (paso < 10) ? "0" + String.valueOf(paso) : String.valueOf(paso) ;
 	    int contadorLinea = 0;
-	    int contadorArchivos = 0;
 	    
 	    
 	    //----------------Método---------------------------------------------
@@ -34,12 +34,23 @@ public class WriterPasos {
 	    	case 2:
 	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
 	    		linea = linea.replace("NOMPROGR", datos.get("PGM"));
+	    		if(!datos.containsKey("PARDB2")) {
+	    			linea = linea.replace(datos.get("PGM") + ",", datos.get("PGM"));
+	    		}
 				break;
 	    	case 3:
+	    		if(!datos.containsKey("PARDB2")) {
+	    			continue;
+	    		}
 	    		linea = linea.replace("&VAR1-&VAR2-..." , datos.get("PARDB2"));
+	    		if (metodosAux.checkLiteralesPARDB2(datos.get("PARDB2"))) {
+	    			writerCortex.write("****** LITERALES EN LOS PARAMETROS DEL PROGRAMA *****");
+	    	    	writerCortex.newLine();
+	    	    	System.out.println("Escribimos: " + linea);
+	    		}
 			default:
 				break;
-			}
+	    	}
 	    	System.out.println("Escribimos: " + linea);
 	    	writerCortex.write(linea);
 	    	writerCortex.newLine();
@@ -69,7 +80,7 @@ public class WriterPasos {
 			BufferedWriter writerCortex) throws IOException {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JFICHENT--------------------------
-	    FileReader ficheroJFICHSAL = new FileReader("C:\\Users\\0014879\\Desktop\\Cortex\\Plantillas\\JFICHSAL.txt");
+	    FileReader ficheroJFICHSAL = new FileReader("C:\\Cortex\\Plantillas\\JFICHSAL.txt");
 	    BufferedReader lectorJFICHSAL = new BufferedReader(ficheroJFICHSAL);	
 	    //----------------Variables------------------------------------------
 	    String linea, nombre;
@@ -83,13 +94,13 @@ public class WriterPasos {
 	    while((linea = lectorJFICHSAL.readLine()) != null) {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
-	    	case 8:
+	    	case 3:
+	    		linea = linea.replace("DDNAME--", nombre);
+	    		break;
+	    	case 9:
 	    		linea = linea.replace("DDNAME--", nombre);
 	    		break;
 	    	case 14:
-	    		linea = linea.replace("DDNAME--", nombre);
-	    		break;
-	    	case 19:
 	    		linea = linea.replace("DDNAME--", nombre);
 	    		break;
 	    	default:
@@ -105,7 +116,7 @@ public class WriterPasos {
 	public void writeJFICHENT(Map<String, String> datos, String numeroPaso, int i, String letraPaso, BufferedWriter writerCortex) throws IOException {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JFICHENT--------------------------
-	    FileReader ficheroJFICHENT = new FileReader("C:\\Users\\0014879\\Desktop\\Cortex\\Plantillas\\JFICHENT.txt");
+	    FileReader ficheroJFICHENT = new FileReader("C:\\Cortex\\Plantillas\\JFICHENT.txt");
 	    BufferedReader lectorJFICHENT = new BufferedReader(ficheroJFICHENT);	
 	    //----------------Variables------------------------------------------
 	    String linea, nombre;
@@ -135,7 +146,7 @@ public class WriterPasos {
 	public void writeJBORRAF(String numeroPaso, int i, String letraPaso, BufferedWriter writerCortex) throws IOException {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JBORRAF--------------------------
-	    FileReader ficheroJBORRAF = new FileReader("C:\\Users\\0014879\\Desktop\\Cortex\\Plantillas\\JBORRAF.txt");
+	    FileReader ficheroJBORRAF = new FileReader("C:\\Cortex\\Plantillas\\JBORRAF.txt");
 	    BufferedReader lectorJBORRAF = new BufferedReader(ficheroJBORRAF);	
 	    //----------------Variables------------------------------------------
 	    String linea;
@@ -144,6 +155,10 @@ public class WriterPasos {
 	    //----------------Método---------------------------------------------
 	    while((linea = lectorJBORRAF.readLine()) != null) {
 	    	contadorLinea ++;
+	    	if(i > 1 && contadorLinea == 1) {
+	    		//No queremos que vuelva a escribir la primera línea de la plantilla
+	    		continue;
+	    	}
 	    	switch (contadorLinea) {
 	    	case 2:
 	    		linea = linea.replace("//---D-", "//" + letraPaso + numeroPaso + "D" + String.valueOf(i));
@@ -161,7 +176,7 @@ public class WriterPasos {
 	public void writeMAILTXT(Map<String, String> datos, String letraPaso, int paso, BufferedWriter writerCortex) throws IOException {
 		// TODO Auto-generated method stub
 			//----------------Fichero de plantilla JJMAILTXT--------------------------
-		    FileReader ficheroMAILTXT = new FileReader("C:\\Users\\0014879\\Desktop\\Cortex\\Plantillas\\JMAILTXT.txt");
+		    FileReader ficheroMAILTXT = new FileReader("C:\\Cortex\\Plantillas\\JMAILTXT.txt");
 		    BufferedReader lectorMAILTXT = new BufferedReader(ficheroMAILTXT);	
 		    //----------------Variables------------------------------------------
 		    String linea;
@@ -241,7 +256,6 @@ public class WriterPasos {
 	    paso++;
 	    String numeroPaso = (paso < 10) ? "0" + String.valueOf(paso) : String.valueOf(paso) ;
 	    int contadorLinea = 0;
-	    int contadorArchivos = 0;
 	    int i = 1;
 	    
 	    //----------------Método---------------------------------------------

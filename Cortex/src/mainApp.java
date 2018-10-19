@@ -1,19 +1,18 @@
-import java.awt.List;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class mainApp {
-
-	public static String programa = "COF20EPCL";
+	//--------------------- DATO A INTRODUCIR ------------------------------
+	public static String programa = "BAN06BPCL";
+	//----------------------------------------------------------------------
+	
+	//--------------------- Variables Programa -----------------------------
 	public static Map<String, String> datos = new HashMap<String, String>();
 	static String letraPaso = programa.substring(5,6);
 	static int paso = -2;
@@ -28,14 +27,12 @@ public class mainApp {
 		
 		String extension = ".txt";
 		String linea, tipoPaso;
-		ArrayList<String> lineasPaso, pasoTratado;
-		int index = 0;
 		boolean seguir = true;
 //-------------------------------------Ficheros-------------------------------------------------		
-	    FileReader ficheroPCL = new FileReader("C:\\Users\\0014879\\Desktop\\Cortex\\" + programa + extension);
+	    FileReader ficheroPCL = new FileReader("C:\\Cortex\\" + programa + extension);
 	    BufferedReader lectorPCL = new BufferedReader(ficheroPCL);
 	    
-	    FileWriter ficheroCortex = new FileWriter("C:\\Users\\0014879\\Desktop\\Cortex\\Migrados\\" + programa.substring(0,6) + ".txt");
+	    FileWriter ficheroCortex = new FileWriter("C:\\Cortex\\Migrados\\" + programa.substring(0,6) + ".txt");
 	    BufferedWriter writerCortex = new BufferedWriter(ficheroCortex);
 //----------------------------------------------------------------------------------------------	    
 	     
@@ -53,10 +50,12 @@ public class mainApp {
 	    while (seguir) {
 		    tipoPaso = aislamientoDePaso();
 		    //Verificación aislamiento
-		    System.out.println("El paso es: ");
+		    //Verificación aislamiento
+		    System.out.println("------- El paso es:  -------------------");
 		    for (int i = 0; i < pasos.size(); i++) {
 		    	System.out.println(pasos.get(i));
 		    }
+		    System.out.println("----------------------------------------");
 // ------------ Para cada paso, leemos el tipo de paso y escribimos su correspondiente plantilla
 		    switch (tipoPaso) {
 		    case "Inicio":
@@ -88,6 +87,9 @@ public class mainApp {
 				writerCortex.newLine();
 				break;
 			}
+		    System.out.println("------- Datos sacados del Paso:  -------");
+		    datos.forEach((k,v) -> System.out.println(k + "-" + v));
+		    System.out.println("----------------------------------------");
 		    paso += 2;
 			if (lineNumber + 1 == fichero.size()) {
 				seguir = false;
@@ -124,7 +126,6 @@ public class mainApp {
 		pasos.clear();
 		
 		for(int i = inicio; i < fin; i++) {
-			String aux = "";
 			String linea = fichero.get(i);
 			if (linea.length() >= 71) {
 				linea = linea.substring(0, 71);
@@ -142,8 +143,8 @@ public class mainApp {
 		
 		index = fichero.get(inicio).indexOf("PATTERN");
 		if (index != -1) {
-			for(int i = index; i < 72; i++) {
-				if(fichero.get(inicio).charAt(i) == ',') {
+			for(int i = index; i < fichero.get(inicio).trim().length(); i++) {
+				if(fichero.get(inicio).charAt(i) == ',' || i + 1 == fichero.get(inicio).trim().length()) {
 					tipoPaso = fichero.get(inicio).substring(index + 8, i);
 					i = 80;
 				}				
@@ -161,7 +162,7 @@ public class mainApp {
 	private static void escribeJJOB(BufferedWriter writerCortex) throws IOException {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JJOB--------------------------
-	    FileReader ficheroJJOB = new FileReader("C:\\Users\\0014879\\Desktop\\Cortex\\Plantillas\\JJOB.txt");
+	    FileReader ficheroJJOB = new FileReader("C:\\Cortex\\Plantillas\\JJOB.txt");
 	    BufferedReader lectorJJOB = new BufferedReader(ficheroJJOB);
 	    //----------------Variables------------------------------------------
 	    String linea;
@@ -181,6 +182,7 @@ public class mainApp {
 	    	System.out.println("Escribimos: " + linea);
 	    	writerCortex.write(linea);
 	    	writerCortex.newLine();
-	    }	
+	    }
+	    lectorJJOB.close();
 	}
 }
