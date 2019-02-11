@@ -9,10 +9,11 @@ import java.util.logging.Level;
 
 
 public class WriterPasos {
-	static Avisos  avisos = new Avisos();
+	//static Avisos  avisos = new Avisos();
 	MetodosAux metodosAux = new MetodosAux();
 	public static int pasoS = -1;
 	public static Map<String, String[]> histPasos = new HashMap<String, String[]>();
+	public static boolean masMail = false;
 	
 	
 
@@ -46,9 +47,12 @@ public class WriterPasos {
 	    	switch (contadorLinea) {
 	    	case 2:
 	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
-	    		linea = linea.replace("NOMPROGR", datos.get("PGM"));
-	    		if(!datos.containsKey("PARDB2")) {
-	    			linea = linea.replace(datos.get("PGM") + ",", datos.get("PGM"));
+	    		linea = linea.replace("NOMPROGR,", datos.get("PGM"));
+	    		if (datos.containsKey("TIME")) {
+	    			linea = linea.trim() + ",TEXEC=" + datos.get("TIME");
+	    		}
+	    		if(datos.containsKey("PARDB2")) {
+	    			linea = linea.trim() + ",";
 	    		}
 				break;
 	    	case 3:
@@ -60,14 +64,14 @@ public class WriterPasos {
 	    	    	writerCortex.newLine();
 	    	    	Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " // Literales en el programa: "
 	    	    			+ datos.get("PARDB2"));
-	    		}
-	    		
+	    		}	    		
 	    		linea = linea.replace("&VAR1-&VAR2-..." , metodosAux.tratarLiteralesPARDB2(datos.get("PARDB2").replace("*&", "-&")));
-			default:
+	    		
+	    	default:
 				break;
 	    	}
 	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea);
+	    	writerCortex.write(linea.replaceAll("\\s*$",""));
 	    	writerCortex.newLine();
 	    }
 	    lectorDB2.close();
@@ -213,7 +217,11 @@ public class WriterPasos {
 		    	switch (contadorLinea) {
 		    	case 3:
 		    		linea = linea.replace("DDNAME--", nombre);
-		    		//REVISAR Z.
+		    		if(infoFich.get("DSN").contains("CORTEX.")) {
+		    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+		    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+		    	    	writerCortex.newLine();
+		    		}
 		    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", infoFich.get("DSN"));
 		    		break;
 		    	case 5:
@@ -234,6 +242,11 @@ public class WriterPasos {
 		    		break;
 		    	case 9:
 		    		linea = linea.replace("DDNAME--", nombre);
+		    		if(infoFich.get("DSN").contains("CORTEX.")) {
+		    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+		    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+		    	    	writerCortex.newLine();
+		    		}
 		    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.XP", infoFich.get("DSN"));
 		    		break;
 		    	case 11:
@@ -247,6 +260,11 @@ public class WriterPasos {
 		    		break;
 		    	case 14:
 		    		linea = linea.replace("DDNAME--", nombre);
+		    		if(infoFich.get("DSN").contains("CORTEX.")) {
+		    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+		    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+		    	    	writerCortex.newLine();
+		    		}
 		    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", infoFich.get("DSN"));
 		    		break;
 		    	case 16:
@@ -284,7 +302,7 @@ public class WriterPasos {
 	    		    	
 		    	if (!linea.equals("")) {
 			    	System.out.println("Escribimos: " + linea);
-			    	writerCortex.write(linea);
+			    	writerCortex.write(linea.replaceAll("\\s*$",""));
 			    	writerCortex.newLine();
 		    	}
 		    }
@@ -327,14 +345,34 @@ public class WriterPasos {
 		    	switch (contadorLinea) {
 		    	case 2:
 		    		linea = linea.replace("DDNAME--", nombre);
+		    		if(infoFich.get("DSN").contains("CORTEX.")) {
+		    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+		    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+		    	    	writerCortex.newLine();
+		    		}
 		    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", "Z." + infoFich.get("DSN"));
+			    	writerCortex.write(linea.replaceAll("\\s*$",""));
+			    	writerCortex.newLine();
+			    	linea = "";
+			    	if(infoFich.containsKey("DSN1")) {
+		    			Avisos.LOGGER.log(Level.INFO,"**** Fichero de entrada con varias DSN, Revisar ****");
+		    			writerCortex.write("**** Fichero de entrada con varias DSN, Revisar ****");
+		    	    	writerCortex.newLine();
+			    	}
+		    		for(int k = 1; infoFich.containsKey("DSN"+k); k++) {
+		    			writerCortex.write("//         DD DISP=SHR,DSN=Z." + infoFich.get("DSN"+k));
+		    			writerCortex.newLine();
+		    			linea = "";
+		    		}
 		    		break;
 		    	default:
 					break;
 		    	}
-		    	System.out.println("Escribimos: " + linea);
-		    	writerCortex.write(linea);
-		    	writerCortex.newLine();
+		    	if (!linea.equals("")) {
+			    	System.out.println("Escribimos: " + linea);
+			    	writerCortex.write(linea.replaceAll("\\s*$",""));
+			    	writerCortex.newLine();
+		    	} 
 		    }
 	    }else {
 	    	writerCortex.write("//*--DUMMY-----------------------------------------------------------");
@@ -359,29 +397,36 @@ public class WriterPasos {
 	    nombre = datos.get("Borrar" + String.valueOf(i));
 	    infoFich = metodosAux.infoFichero(pasoE, letraPaso, nombre);
 	    
-	    while((linea = lectorJBORRAF.readLine()) != null) {
-	    	contadorLinea ++;
-	    	if(i > 1 && contadorLinea == 1) {
-	    		//No queremos que vuelva a escribir la primera línea de la plantilla
-	    		continue;
-	    	}
-	    	switch (contadorLinea) {
-	    	case 2:
-	    		if(i < 10) {
-	    			linea = linea.replace("//---D-", "//" + letraPaso + numeroPaso + "D" + String.valueOf(i));
-	    		}else {
-	    			linea = linea.replace("//---D- ", "//" + letraPaso + numeroPaso + "D" + String.valueOf(i));
-	    		}
-	    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", infoFich.get("DSN"));
-	    		break;
-	    	default:
-				break;
-	    	}
-	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea);
-	    	writerCortex.newLine();
+	    if (!infoFich.containsKey("DUMMY")) {
+		    while((linea = lectorJBORRAF.readLine()) != null) {
+		    	contadorLinea ++;
+		    	if(i > 1 && contadorLinea == 1) {
+		    		//No queremos que vuelva a escribir la primera línea de la plantilla
+		    		continue;
+		    	}
+		    	switch (contadorLinea) {
+		    	case 2:
+		    		if(i < 10) {
+		    			linea = linea.replace("//---D-", "//" + letraPaso + numeroPaso + "D" + String.valueOf(i));
+		    		}else {
+		    			linea = linea.replace("//---D- ", "//" + letraPaso + numeroPaso + "D" + String.valueOf(i));
+		    		}
+		    		if(infoFich.get("DSN").contains("CORTEX.")) {
+		    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+		    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+		    	    	writerCortex.newLine();
+		    		}
+		    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", infoFich.get("DSN"));
+		    		break;
+		    	default:
+					break;
+		    	}
+		    	System.out.println("Escribimos: " + linea);
+		    	writerCortex.write(linea.replaceAll("\\s*$",""));
+		    	writerCortex.newLine();
+		    }
+		    lectorJBORRAF.close();	 
 	    }
-	    lectorJBORRAF.close();	 
 	}
 
 	public void writeMAILTXT(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException {
@@ -446,16 +491,21 @@ public class WriterPasos {
 	    	case 9:
 	    		if (datos.get("ADRDE3") == null && fi == "") {
 					linea = linea.trim();
+					masMail = false;
 				}
 				else {
 					salida = MetodosAux.ComprobarTamañoLinea("ADRDE3", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 					if (!fi.isEmpty()) {
-		    			Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " // No caben todos los correos - Falta añadir: " + fi);
-		    			System.out.println("Escribimos: " + "***** No caben todos los correos. Revisar  ****");
-		    	    	writerCortex.write("***** No caben todos los correos. Revisar  ****");
-		    	    	writerCortex.newLine();
+						masMail = true;
+						datos.put("ADRDES", fi);
+						datos.put("ADRDE1", "");
+						datos.put("ADRDE2", "");
+//		    			Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " // No caben todos los correos - Falta añadir: " + fi);
+//		    			System.out.println("Escribimos: " + "***** No caben todos los correos. Revisar  ****");
+//		    	    	writerCortex.write("***** No caben todos los correos. Revisar  ****");
+//		    	    	writerCortex.newLine();
 		    	    	fi = "";
 					}
 				}
@@ -530,7 +580,7 @@ public class WriterPasos {
 				break;
 			}
 	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea);
+	    	writerCortex.write(linea.replaceAll("\\s*$",""));
 	    	writerCortex.newLine();
 	    }
 	    lectorMAILTXT.close();
@@ -565,6 +615,11 @@ public class WriterPasos {
 	    	case 2:
 	    		linea = linea.replace("//---D1", "//" + letraPaso + numeroPaso + "D" + String.valueOf(i));
 	    		i++;
+	    		if(infoSortOut.get("DSN").contains("CORTEX.")) {
+	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    	    	writerCortex.newLine();
+	    		}
 	    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", infoSortOut.get("DSN"));
 				break;
 	    	case 4:
@@ -581,6 +636,11 @@ public class WriterPasos {
 	    		linea = "";
 	    		break;
 	    	case 6:
+	    		if(infoSortOut.get("DSN").contains("CORTEX.")) {
+	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    	    	writerCortex.newLine();
+	    		}
 	    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", infoSortOut.get("DSN"));
 	    		break;
 	    	case 8:
@@ -614,7 +674,7 @@ public class WriterPasos {
 			}
 	    	if (!linea.equals("")) {
 	    		System.out.println("Escribimos: " + linea);
-	    		writerCortex.write(linea);
+	    		writerCortex.write(linea.replaceAll("\\s*$",""));
 	    		writerCortex.newLine();
 	    	}
 	    }
@@ -663,6 +723,11 @@ public class WriterPasos {
 	    	    	writerCortex.write("***** REVISAR FICHERO - DSN NO ENCONTRADA *****");
 	    	    	writerCortex.newLine();
 	    		}
+	    		if(dsn.contains("CORTEX.")) {
+	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    	    	writerCortex.newLine();
+	    		}
 	    	    StringBuffer host = new StringBuffer("HOST=Z." + dsn + ",");
 	    	    spaces = 40 - host.length();  		
 	    		for (int j = 0; j < spaces; j++) {
@@ -676,9 +741,9 @@ public class WriterPasos {
 	    			datos.replace("FDEST", aux);
 	    		}
 	    		if(datos.get("FDEST").contains("_&")) {
-	    			String aux = datos.get("FDEST");
-	    			aux = aux.replaceAll("_&", "-&");
-	    			datos.replace("FDEST", aux);
+//	    			String aux = datos.get("FDEST");
+//	    			aux = aux.replaceAll("_&", "-&");
+//	    			datos.replace("FDEST", aux);
 					Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " // Revisar fichero -  contiene _& ");
 	    			System.out.println("*****REVISAR FICHERO CON _&*****");
 	    	    	writerCortex.write("*****REVISAR FICHERO CON _&*****");
@@ -746,7 +811,7 @@ public class WriterPasos {
 				break;
 			}
 	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea);
+	    	writerCortex.write(linea.replaceAll("\\s*$",""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJFTPSEND.close();		
@@ -779,6 +844,11 @@ public class WriterPasos {
 	    	switch (contadorLinea) {
 	    	case 2:
 	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		if(infoFtpReb.get("DSN").contains("CORTEX.")) {
+	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    	    	writerCortex.newLine();
+	    		}
 	    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", infoFtpReb.get("DSN"));
 				break;
 	    	case 3:
@@ -799,9 +869,9 @@ public class WriterPasos {
 	    			datos.replace("FORIG", aux);
 	    		}
 	    		if(datos.get("FORIG").contains("_&")) {
-	    			String aux = datos.get("FORIG");
-	    			aux = aux.replaceAll("_&", "-&");
-	    			datos.replace("FORIG", aux);
+//	    			String aux = datos.get("FORIG");
+//	    			aux = aux.replaceAll("_&", "-&");
+//	    			datos.replace("FORIG", aux);
 					Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " // Revisar fichero -  contiene _& ");
 	    			System.out.println("*****REVISAR FICHERO CON _&*****");
 	    	    	writerCortex.write("*****REVISAR FICHERO CON _&*****");
@@ -835,6 +905,11 @@ public class WriterPasos {
 	    		}
 	    		break;
 	    	case 7:
+	    		if(infoFtpReb.get("DSN").contains("CORTEX.")) {
+	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    	    	writerCortex.newLine();
+	    		}
 	    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", infoFtpReb.get("DSN"));
 	    		break;
 	    	case 9:
@@ -851,7 +926,7 @@ public class WriterPasos {
 				break;
 			}
 	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea);
+	    	writerCortex.write(linea.replaceAll("\\s*$",""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJFTPREB.close();
@@ -896,9 +971,9 @@ public class WriterPasos {
 	    			datos.replace("FITXER", aux);
 	    		}
 	    		if(datos.get("FITXER").contains("_&")) {
-	    			String aux = datos.get("FITXER");
-	    			aux = aux.replaceAll("_&", "-&");
-	    			datos.replace("FITXER", aux);
+//	    			String aux = datos.get("FITXER");
+//	    			aux = aux.replaceAll("_&", "-&");
+//	    			datos.replace("FITXER", aux);
 					Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " // Revisar fichero -  contiene _& ");
 	    			System.out.println("*****REVISAR FICHERO CON _&*****");
 	    	    	writerCortex.write("*****REVISAR FICHERO CON _&*****");
@@ -935,7 +1010,7 @@ public class WriterPasos {
 				break;
 			}
 	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea);
+	    	writerCortex.write(linea.replaceAll("\\s*$",""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJFTPDEL.close();
@@ -973,6 +1048,11 @@ public class WriterPasos {
 	    		for (int j = 0; j < spaces; j++) {
 	    			dsnName.append(" ");
 	    		}
+	    		if(dsnName.indexOf("CORTEX.") != -1) {
+	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    	    	writerCortex.newLine();
+	    		}
 	    		linea = linea.replace("DSNAME=,                                  ", dsnName);
 				break;
 	    	case 4:
@@ -981,9 +1061,9 @@ public class WriterPasos {
 	    			datos.replace("SORTIDA", aux);
 	    		}
 	    		if(datos.get("SORTIDA").contains("_&")) {
-	    			String aux = datos.get("SORTIDA");
-	    			aux = aux.replaceAll("_&", "-&");
-	    			datos.replace("SORTIDA", aux);
+//	    			String aux = datos.get("SORTIDA");
+//	    			aux = aux.replaceAll("_&", "-&");
+//	    			datos.replace("SORTIDA", aux);
 					Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " // Revisar fichero -  contiene _& ");
 	    			System.out.println("*****REVISAR FICHERO CON _&*****");
 	    	    	writerCortex.write("*****REVISAR FICHERO CON _&*****");
@@ -1001,7 +1081,7 @@ public class WriterPasos {
 				break;
 			}
 	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea);
+	    	writerCortex.write(linea.replaceAll("\\s*$",""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJMAILMSG.close();	
@@ -1054,9 +1134,9 @@ public class WriterPasos {
 	    			datos.replace("FDEST", aux);
 	    		}
 	    		if(datos.get("FDEST").contains("_&")) {
-	    			String aux = datos.get("FDEST");
-	    			aux = aux.replaceAll("_&", "-&");
-	    			datos.replace("FDEST", aux);
+//	    			String aux = datos.get("FDEST");
+//	    			aux = aux.replaceAll("_&", "-&");
+//	    			datos.replace("FDEST", aux);
 					Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " // Revisar fichero -  contiene _& ");
 	    			System.out.println("*****REVISAR FICHERO CON _&*****");
 	    	    	writerCortex.write("*****REVISAR FICHERO CON _&*****");
@@ -1119,7 +1199,7 @@ public class WriterPasos {
 				break;	
 	    	}
 		    System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea);
+	    	writerCortex.write(linea.replaceAll("\\s*$",""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJFTPSAPP.close();
@@ -1155,6 +1235,11 @@ public class WriterPasos {
 				break;
 	    	case 3:
 	    		StringBuffer dsname = new StringBuffer("DSNAME=Z." + metodosAux.infoDSN(pasoE, letraPaso, "ENTRA1") + ", ");
+	    		if(dsname.indexOf("CORTEX.") != -1) {
+	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    	    	writerCortex.newLine();
+	    		}
 	    		linea = linea.replace("DSNAME=,               ", dsname);
 	    		break;
 	    	case 4:
@@ -1163,9 +1248,9 @@ public class WriterPasos {
 	    			datos.replace("SORTIDA", aux);
 	    		}
 	    		if(datos.get("SORTIDA").contains("_&")) {
-	    			String aux = datos.get("SORTIDA");
-	    			aux = aux.replaceAll("_&", "-&");
-	    			datos.replace("SORTIDA", aux);
+//	    			String aux = datos.get("SORTIDA");
+//	    			aux = aux.replaceAll("_&", "-&");
+//	    			datos.replace("SORTIDA", aux);
 					Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " // Revisar fichero -  contiene _& ");
 	    			System.out.println("*****REVISAR FICHERO CON _&*****");
 	    	    	writerCortex.write("*****REVISAR FICHERO CON _&*****");
@@ -1217,16 +1302,21 @@ public class WriterPasos {
 	    	case 11:
 	    		if (datos.get("ADRDE3") == null && fi == "") {
 					linea = linea.trim();
+					masMail = false;
 				}
 				else {
 					salida = MetodosAux.ComprobarTamañoLinea("ADRDE3", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 					if (!fi.isEmpty()) {
-		    			Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " // No caben todos los correos - Falta añadir: " + fi);
-		    			System.out.println("Escribimos: " + "***** No caben todos los correos. Revisar  ****");
-		    	    	writerCortex.write("***** No caben todos los correos. Revisar  ****");
-		    	    	writerCortex.newLine();
+						masMail = true;
+						datos.put("ADRDES", fi);
+						datos.put("ADRDE1", "");
+						datos.put("ADRDE2", "");
+//		    			Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " // No caben todos los correos - Falta añadir: " + fi);
+//		    			System.out.println("Escribimos: " + "***** No caben todos los correos. Revisar  ****");
+//		    	    	writerCortex.write("***** No caben todos los correos. Revisar  ****");
+//		    	    	writerCortex.newLine();
 		    	    	fi = "";
 					}
 				}
@@ -1300,7 +1390,7 @@ public class WriterPasos {
 				break;
 			}
 	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea);
+	    	writerCortex.write(linea.replaceAll("\\s*$",""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJMAILANX.close();	
@@ -1330,12 +1420,20 @@ public class WriterPasos {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
 	    	case 2:			    		
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);			    		
+	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);	
+	    		if(metodosAux.infoDSN(pasoE, letraPaso, "ENTRADA").contains("CORTEX.")) {
+	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    	    	writerCortex.newLine();
+	    		}
 	    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", metodosAux.infoDSN(pasoE, letraPaso, "ENTRADA"));
+	    		if(datos.containsKey("NUMLIN") && !datos.get("NUMLIN").trim().equals("")) {
+	    			linea = linea.trim() + ",LINIA=" + datos.get("NUMLIN");
+	    		}
 				break;			    	
 			}
 	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea);
+	    	writerCortex.write(linea.replaceAll("\\s*$",""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJFIVACIO.close();		
@@ -1373,7 +1471,7 @@ public class WriterPasos {
 				break;
 			}
 	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea);
+	    	writerCortex.write(linea.replaceAll("\\s*$",""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJOPCREC.close();	
@@ -1406,6 +1504,11 @@ public class WriterPasos {
 	    	switch (contadorLinea) {
 	    	case 3:
 	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		if(datos.get("DSN").contains("CORTEX.")) {
+	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    	    	writerCortex.newLine();
+	    		}
 	    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", datos.get("DSN"));
 				break;
 	    	case 5:
@@ -1420,6 +1523,11 @@ public class WriterPasos {
 	    	case 10:
 	    		for(int i = 1; datos.containsKey("DSN" + i); i++) {
 	    			String lineaEditada = linea;
+	    			if(datos.get("DSN" + i).contains("CORTEX.")) {
+		    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+		    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+		    	    	writerCortex.newLine();
+		    		}
 	    			lineaEditada = lineaEditada.replace("TSFUS01.DD----1", "TSFUS01." + datos.get("FICH" + i));
 	    			if (i < 10) {
 	    				lineaEditada = lineaEditada.replace("&DUMY01", "&DUMY0" + i);
@@ -1454,6 +1562,11 @@ public class WriterPasos {
 	    			nameFich.append(" ");
 	    		}
 	    		linea = linea.replace("//DDSAL--  ", "//" + nameFich);
+	    		if(datos.get("DSN").contains("CORTEX.")) {
+	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    	    	writerCortex.newLine();
+	    		}
 	    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", datos.get("DSN"));
 	    		break;
 	    	case 16:
@@ -1473,6 +1586,11 @@ public class WriterPasos {
 	    		numeroPaso = (pasoS < 10) ? "0" + String.valueOf(pasoS) : String.valueOf(pasoS) ;
 	    		for(int i = 1; datos.containsKey("DSN" + i); i++) {
 	    			String lineaEditada = linea;
+	    			if(datos.get("DSN" + i).contains("CORTEX.")) {
+		    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+		    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+		    	    	writerCortex.newLine();
+		    		}
 	    			lineaEditada = lineaEditada.replace("//---D-", "//" + letraPaso + numeroPaso + "D" + i);
 	    			lineaEditada = lineaEditada.replace("APL.XXXXXXXX.NOMMEM.&GENE1", "Z." + datos.get("DSN" + i));
 	    			
@@ -1491,7 +1609,7 @@ public class WriterPasos {
 			}
 	    	if(!linea.equals("")) {
 		    	System.out.println("Escribimos: " + linea);
-		    	writerCortex.write(linea);
+		    	writerCortex.write(linea.replaceAll("\\s*$",""));
 		    	writerCortex.newLine();
 	    	}
 	    }
@@ -1525,6 +1643,11 @@ public class WriterPasos {
 	    	switch (contadorLinea) {
 	    	case 3:
 	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		if(datos.get("DSN").contains("CORTEX.")) {
+	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    	    	writerCortex.newLine();
+	    		}
 	    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", datos.get("DSN"));
 				break;
 	    	case 5:
@@ -1539,6 +1662,11 @@ public class WriterPasos {
 	    	case 9:
 	    		for(int i = 1; datos.containsKey("DSN" + i); i++) {
 	    			String lineaEditada = linea;
+	    			if(datos.get("DSN" + i).contains("CORTEX.")) {
+		    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+		    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+		    	    	writerCortex.newLine();
+		    		}
 	    			lineaEditada = lineaEditada.replace("TSGENQ1.DD----1", "TSGENQ1." + datos.get("FICH" + i)); 
 	    			lineaEditada = lineaEditada.replace("APL.XXXXXXXX.NOMMEM.&GENE1", "Z." + datos.get("DSN" + i));
 	    			
@@ -1568,6 +1696,11 @@ public class WriterPasos {
 	    			nameFich.append(" ");
 	    		}
 	    		linea = linea.replace("//DDSAL--  ", "//" + nameFich);
+	    		if(datos.get("DSN").contains("CORTEX.")) {
+	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    	    	writerCortex.newLine();
+	    		}
 	    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", datos.get("DSN"));
 	    		break;
 	    	case 15:
@@ -1587,6 +1720,11 @@ public class WriterPasos {
 	    		numeroPaso = (pasoS < 10) ? "0" + String.valueOf(pasoS) : String.valueOf(pasoS) ;
 	    		for(int i = 1; datos.containsKey("DSN" + i); i++) {
 	    			String lineaEditada = linea;
+	    			if(datos.get("DSN" + i).contains("CORTEX.")) {
+		    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+		    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+		    	    	writerCortex.newLine();
+		    		}
 	    			lineaEditada = lineaEditada.replace("//---D-", "//" + letraPaso + numeroPaso + "D" + i);
 	    			lineaEditada = lineaEditada.replace("APL.XXXXXXXX.NOMMEM.&GENE1", "Z." + datos.get("DSN" + i));
 	    			
@@ -1605,7 +1743,7 @@ public class WriterPasos {
 			}
 	    	if(!linea.equals("")) {
 		    	System.out.println("Escribimos: " + linea);
-		    	writerCortex.write(linea);
+		    	writerCortex.write(linea.replaceAll("\\s*$",""));
 		    	writerCortex.newLine();
 	    	}
 	    }
@@ -1687,13 +1825,18 @@ public class WriterPasos {
 	    		}
 	    		break;
 	    	case 10:
+	    		if(metodosAux.infoDSN(pasoE, letraPaso, "ENTRADA").contains("CORTEX.")) {
+	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    	    	writerCortex.newLine();
+	    		}
 	    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", "Z." + metodosAux.infoDSN(pasoE, letraPaso, "ENTRADA"));
 	    		break;
 	    	default:
 				break;
 			}
 	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea);
+	    	writerCortex.write(linea.replaceAll("\\s*$",""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJPAPYRUS.close();
@@ -1728,7 +1871,7 @@ public class WriterPasos {
 				break;
 			}
 	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea);
+	    	writerCortex.write(linea.replaceAll("\\s*$",""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJPAUSA.close();		
@@ -1807,7 +1950,7 @@ public class WriterPasos {
 			}
 	    	if (!linea.equals("")) {
 		    	System.out.println("Escribimos: " + linea);
-		    	writerCortex.write(linea);
+		    	writerCortex.write(linea.replaceAll("\\s*$",""));
 		    	writerCortex.newLine();
 	    	}
 	    }
@@ -1867,7 +2010,7 @@ public class WriterPasos {
 				break;
 			}
 	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea);
+	    	writerCortex.write(linea.replaceAll("\\s*$",""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJSOFINF.close();
@@ -1918,9 +2061,9 @@ public class WriterPasos {
 	    			datos.replace("FDEST", aux);
 	    		}
 	    		if(datos.get("FDEST").contains("_&")) {
-	    			String aux = datos.get("FDEST");
-	    			aux = aux.replaceAll("_&", "-&");
-	    			datos.replace("FDEST", aux);
+//	    			String aux = datos.get("FDEST");
+//	    			aux = aux.replaceAll("_&", "-&");
+//	    			datos.replace("FDEST", aux);
 					Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " // Revisar fichero -  contiene _& ");
 	    			System.out.println("*****REVISAR FICHERO CON _&*****");
 	    	    	writerCortex.write("*****REVISAR FICHERO CON _&*****");
@@ -1983,7 +2126,7 @@ public class WriterPasos {
 				break;
 			}
 	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea);
+	    	writerCortex.write(linea.replaceAll("\\s*$",""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJFTPS123.close();	
@@ -2026,9 +2169,9 @@ public class WriterPasos {
 	    			datos.replace("FITXER", aux);
 	    		}
 	    		if(datos.get("FITXER").contains("_&")) {
-	    			String aux = datos.get("FITXER");
-	    			aux = aux.replaceAll("_&", "-&");
-	    			datos.replace("FITXER", aux);
+//	    			String aux = datos.get("FITXER");
+//	    			aux = aux.replaceAll("_&", "-&");
+//	    			datos.replace("FITXER", aux);
 					Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " // Revisar fichero -  contiene _& ");
 	    			System.out.println("*****REVISAR FICHERO CON _&*****");
 	    	    	writerCortex.write("*****REVISAR FICHERO CON _&*****");
@@ -2065,7 +2208,7 @@ public class WriterPasos {
 				break;
 			}
 	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea);
+	    	writerCortex.write(linea.replaceAll("\\s*$",""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJFTPVER.close();	
@@ -2112,9 +2255,9 @@ public class WriterPasos {
 	    			datos.replace("SORTIDA", aux);
 	    		}
 	    		if(datos.get("SORTIDA").contains("_&")) {
-	    			String aux = datos.get("SORTIDA");
-	    			aux = aux.replaceAll("_&", "-&");
-	    			datos.replace("SORTIDA", aux);
+//	    			String aux = datos.get("SORTIDA");
+//	    			aux = aux.replaceAll("_&", "-&");
+//	    			datos.replace("SORTIDA", aux);
 					Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " // Revisar fichero -  contiene _& ");
 	    			System.out.println("*****REVISAR FICHERO CON _&*****");
 	    	    	writerCortex.write("*****REVISAR FICHERO CON _&*****");
@@ -2248,7 +2391,7 @@ public class WriterPasos {
 				break;
 			}
 	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea);
+	    	writerCortex.write(linea.replaceAll("\\s*$",""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJMAIL123.close();	
@@ -2281,6 +2424,11 @@ public class WriterPasos {
 	    	switch (contadorLinea) {
 	    	case 2:
 	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		if(metodosAux.infoDSN(pasoE, letraPaso, "SYSUT2").contains("CORTEX.")) {
+	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    	    	writerCortex.newLine();
+	    		}
 	    		linea = linea.replace("APL.YYYYYYYY.NOMMEM2.&FAAMMDDV", metodosAux.infoDSN(pasoE, letraPaso, "SYSUT2"));
 	    		break;
 	    	case 3:
@@ -2289,6 +2437,11 @@ public class WriterPasos {
 	    	case 4:
 	    		for(int i = 0; infoFichIn.containsKey("DSN" + i); i++) {
 	    			String lineaEditada = linea;
+	    			if(infoFichIn.get("DSN" + i).contains("CORTEX.")) {
+		    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+		    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+		    	    	writerCortex.newLine();
+		    		}
 	    			if(i==0) {
 	    				lineaEditada = lineaEditada.replace("APL.XXXXXXXX.NOMMEM1.&FAAMMDDV", infoFichIn.get("DSN" + i));
 	    			}else {
@@ -2302,10 +2455,23 @@ public class WriterPasos {
 	    		linea = "";
 	    		break;
 	    	case 5:
+	    		if(metodosAux.infoDSN(pasoE, letraPaso, "SYSUT2").contains("CORTEX.")) {
+	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    	    	writerCortex.newLine();
+	    		}
 	    		linea = linea.replace("APL.YYYYYYYY.NOMMEM2.&FAAMMDDV", metodosAux.infoDSN(pasoE, letraPaso, "SYSUT2"));
 	    		break;
 	    	case 7:
+	    		if(metodosAux.infoDSN(pasoE, letraPaso, "SYSUT1").contains("CORTEX.")) {
+	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    	    	writerCortex.newLine();
+	    		}
 	    		linea = linea.replace("APL.XXXXXXXX.NOMMEM1.&FAAMMDDV,", metodosAux.infoDSN(pasoE, letraPaso, "SYSUT1"));
+	    		if(infoFichOut.containsKey("MGMTCLAS")) {
+	    			linea = linea.trim() + ",";
+	    		}
 	    		break;
 	    	case 8:
 	    		if(infoFichOut.containsKey("MGMTCLAS")) {
@@ -2319,7 +2485,7 @@ public class WriterPasos {
 			}
 	    	if(!linea.equals("")) {
 		    	System.out.println("Escribimos: " + linea);
-		    	writerCortex.write(linea);
+		    	writerCortex.write(linea.replaceAll("\\s*$",""));
 		    	writerCortex.newLine();
 	    	}
 	    }
@@ -2405,7 +2571,7 @@ public class WriterPasos {
 				break;
 	    	}
 	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea);
+	    	writerCortex.write(linea.replaceAll("\\s*$",""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJFIVERDS.close();	 
@@ -2462,6 +2628,11 @@ public class WriterPasos {
 	    	    	writerCortex.write("***** REVISAR FICHERO - DSN NO ENCONTRADA *****");
 	    	    	writerCortex.newLine();
 	    		}
+	    		if(dsn.contains("CORTEX.")) {
+	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    	    	writerCortex.newLine();
+	    		}
 	    	    StringBuffer host = new StringBuffer("HOST=Z." + dsn + ",");
 	    	    spaces = 40 - host.length();  		
 	    		for (int j = 0; j < spaces; j++) {
@@ -2475,9 +2646,9 @@ public class WriterPasos {
 	    			datos.replace("FDEST", aux);
 	    		}
 	    		if(datos.get("FDEST").contains("_&")) {
-	    			String aux = datos.get("FDEST");
-	    			aux = aux.replaceAll("_&", "-&");
-	    			datos.replace("FDEST", aux);
+//	    			String aux = datos.get("FDEST");
+//	    			aux = aux.replaceAll("_&", "-&");
+//	    			datos.replace("FDEST", aux);
 					Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " // Revisar fichero -  contiene _& ");
 	    			System.out.println("*****REVISAR FICHERO CON _&*****");
 	    	    	writerCortex.write("*****REVISAR FICHERO CON _&*****");
@@ -2546,7 +2717,7 @@ public class WriterPasos {
 			}
 	    	if(!linea.equals("")) {
 		    	System.out.println("Escribimos: " + linea);
-		    	writerCortex.write(linea);
+		    	writerCortex.write(linea.replaceAll("\\s*$",""));
 		    	writerCortex.newLine();
 	    	}
 	    }
@@ -2607,7 +2778,7 @@ public class WriterPasos {
 				break;
 	    	}
 	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea);
+	    	writerCortex.write(linea.replaceAll("\\s*$",""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJPGM.close();

@@ -1,3 +1,4 @@
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.io.BufferedReader;
@@ -18,9 +19,10 @@ import javax.swing.UIManager;
 
 public class mainApp {
 	//--------------------- DATO A INTRODUCIR ------------------------------
-	public static String programa = "AGE01B";
+	public static String programa = "";
 	public static boolean withProc = true;
 	public static boolean withCntl = false;
+	public static boolean withListado = false;
 	//----------------------------------------------------------------------
 	
 	//--------------------- Variables Programa -----------------------------
@@ -36,7 +38,6 @@ public class mainApp {
 	static int auxUnidad = 0;
 	static LectorPasos lectorPasos = new LectorPasos();
 	static WriterPasos writerPasos = new WriterPasos();
-	static Avisos  avisos = new Avisos();
 	static String tipoPaso = "";
 	
 	public static void main(String[] args) throws IOException {
@@ -44,7 +45,7 @@ public class mainApp {
 //		String linea, tipoPaso;
 		String linea;
 		boolean seguir = true, escribir = false;
-		
+				
 		//-------------------------------------FICHERO DE ENTRADA---------------------------------------		
 	    FileReader ficheroPCL = new FileReader("C:\\Cortex\\PCL.txt");
 	    BufferedReader lectorPCL = new BufferedReader(ficheroPCL);
@@ -53,6 +54,7 @@ public class mainApp {
         //------------------------------------PROGRAMA--------------------------------------------------
 	    
 	    File ficheroFecha = new File("C:\\Cortex\\PCL.txt");
+
 	    long mod = ficheroFecha.lastModified();
 	    Date fecha = new Date(mod);
 	    
@@ -60,15 +62,34 @@ public class mainApp {
 	    UIManager.put("OptionPane.messageFont", new Font("System", Font.PLAIN, 20));
 	    UIManager.put("OptionPane.buttonFont", new Font("System", Font.PLAIN, 20)); 
 	    UIManager.put("TextField.font", new Font("System", Font.PLAIN, 20)); 
-
-	    JOptionPane.showMessageDialog(null, "Última versión PCL: " + fecha); 
-	    programa = JOptionPane.showInputDialog("Introduzca el nombre del programa:");
-		programa = programa.toUpperCase(); 
-		int proc = JOptionPane.showConfirmDialog(null, "¿Con archivo PROC?", "Alerta!", JOptionPane.YES_NO_OPTION);
-		withProc = proc == 0 ? true : false;
-
-		int cntl = JOptionPane.showConfirmDialog(null, "¿Con archivo CNTL?", "Alerta!", JOptionPane.YES_NO_OPTION);
-		withCntl = cntl == 0 ? true : false;
+	    
+	    if (!withListado) {
+	    	JOptionPane.showMessageDialog(null, "Última versión PCL: " + fecha); 
+	    	
+		    programa = JOptionPane.showInputDialog("Introduzca el nombre del programa:");
+			programa = programa.toUpperCase(); 
+			
+			new Avisos();
+		
+		    File ficheroPROC = new File("C:\\Cortex\\PROC\\" + mainApp.programa.substring(0,6) + ".txt");
+			int proc = JOptionPane.showConfirmDialog(null, "¿Con archivo PROC?", "Alerta!", JOptionPane.YES_NO_OPTION);
+			withProc = proc == 0 ? true : false;
+			if(withProc && !ficheroPROC.exists()) {
+				JOptionPane.showMessageDialog(null, "AVISO: No existe el PROC");
+				Avisos.LOGGER.log(Level.INFO, "AVISO: No existe el PROC");
+			}
+			
+		    File ficheroCNTL = new File("C:\\Cortex\\CNTL\\" + mainApp.programa.substring(0,6) + ".txt");
+			int cntl = JOptionPane.showConfirmDialog(null, "¿Con archivo CNTL?", "Alerta!", JOptionPane.YES_NO_OPTION);
+			withCntl = cntl == 0 ? true : false;
+			if(withCntl && !ficheroCNTL.exists()) {
+				JOptionPane.showMessageDialog(null, "AVISO: No existe el CNTL");
+				Avisos.LOGGER.log(Level.INFO, "AVISO: No existe el CNTL");
+			}
+	    }else {
+	    	new Avisos();
+	    }
+		
 		letraPaso = programa.substring(5,6);
 
 //----------------------- FICHERO DE SALIDA ----------------------------------------------------------
@@ -84,7 +105,7 @@ public class mainApp {
 	    	if(linea.startsWith(":/ ADD NAME=" + programa.substring(0,6)) || escribir) {
 	    		escribir = true;
 	    		fichero.add(linea);
-	    		if(linea.startsWith(":/ ADD NAME=") && !linea.startsWith(":/ ADD NAME=" + programa.substring(0,6))) {
+	    		if(linea.startsWith(":/ ADD NAME=") && !linea.startsWith(":/ ADD NAME=" + programa.substring(0,6) + " ")) {
 		    		escribir = false;
 		    		seguir = false;
 		    	}
@@ -108,8 +129,10 @@ public class mainApp {
 // ------------ Para cada paso, leemos el tipo de paso y escribimos su correspondiente plantilla
 		    switch (tipoPaso) {
 		    case "Inicio":
+		    	String comentarioAnterior = "";
 				for(int i = 0; i < pasos.size(); i++) {
-					if (pasos.get(i).startsWith("*")){
+					if (pasos.get(i).startsWith("*") && !pasos.get(i).equals(comentarioAnterior)){
+						comentarioAnterior = pasos.get(i);
 						writerCortex.write("//" + pasos.get(i));
 						writerCortex.newLine();
 					}
@@ -122,6 +145,9 @@ public class mainApp {
 			case "NAME=MAILTXT":
 				datos = lectorPasos.leerPaso(pasos);
 				writerPasos.writeMAILTXT(datos, letraPaso, pasoE, writerCortex);
+				while(WriterPasos.masMail) {
+					writerPasos.writeMAILTXT(datos, letraPaso, pasoE, writerCortex);
+				}
 				break;
 			case "SORT":
 				datos = lectorPasos.leerPasoSort(pasos);
@@ -150,6 +176,9 @@ public class mainApp {
 			case "NAME=MAIL":
 				datos = lectorPasos.leerPaso(pasos);
 				writerPasos.writeJMAILANX(datos, letraPaso, pasoE, writerCortex);
+				while(WriterPasos.masMail) {
+					writerPasos.writeMAILTXT(datos, letraPaso, pasoE, writerCortex);
+				}
 				break;
 			case "NAME=VERBUIT":
 				datos = lectorPasos.leerPaso(pasos);
@@ -213,6 +242,10 @@ public class mainApp {
 				datos = lectorPasos.leerPaso(pasos);
 				writerPasos.writeJPGM(datos, letraPaso, pasoE, writerCortex);
 				break;
+			case "JIEBGENE":
+				datos = lectorPasos.leerPaso(pasos);
+				writerPasos.writeJIEBGENE(datos, letraPaso, pasoE, writerCortex);
+				break;
 			case "ignore":
 				datos = lectorPasos.leerPaso(pasos);
 				writerPasos.writeComments(datos, writerCortex);
@@ -222,6 +255,9 @@ public class mainApp {
 					tipoPaso = "Plantilla QMF - Avisar Aplicación";	
 
 				}
+//				if(tipoPaso.equals("NAME=MAIL123")) {
+//					tipoPaso = "Plantilla JMAIL123 - Revisar";	
+//				}
 				WriterPasos.pasoS += 2;
 			    String numeroPaso = (WriterPasos.pasoS < 10) ? "0" + String.valueOf(WriterPasos.pasoS) : String.valueOf(WriterPasos.pasoS) ;
 			    String numeroPasoE = (pasoE < 10) ? "0" + String.valueOf(pasoE) : String.valueOf(pasoE) ;
@@ -254,6 +290,10 @@ public class mainApp {
 		Avisos.LOGGER.log(Level.INFO, "***** PROCESO Migración a TEST finalizado CORRECTAMENTE *****");
 		
 		Explomig.migracionPREP();
+
+		abrirIncidencias();
+		Avisos.LOGGER.removeHandler(Avisos.fileHandler);
+		Avisos.fileHandler.close();
 
 	}
 
@@ -290,7 +330,11 @@ public class mainApp {
 		if (index != -1) {
 			for(int i = index; i < fichero.get(inicio).trim().length(); i++) {
 				if(fichero.get(inicio).charAt(i) == ',') {
-					tipoPaso = fichero.get(inicio).substring(index + 8, i);
+					if(fichero.get(inicio).charAt(index + 8) == ' ') {
+						tipoPaso = fichero.get(inicio).substring(index + 9, i);
+					}else {
+						tipoPaso = fichero.get(inicio).substring(index + 8, i);
+					}
 					i = 80;
 				}
 				if(i + 1 == fichero.get(inicio).trim().length()) {
@@ -305,7 +349,7 @@ public class mainApp {
 				tipoPaso = "JSOFCHEC";
 			}
 			if (fichero.get(inicio).contains("NAME=IEBGCOPY")) {
-				tipoPaso = "JIEBGENE - Caso particular";
+				tipoPaso = "JIEBGENE";
 			}
 		}else {
 			if (fichero.get(inicio).contains(" SORT")) {
@@ -349,7 +393,7 @@ public class mainApp {
 			}
 			if(!(tipoPaso.equals("SORT") || tipoPaso.equals("PGM=SOF07200"))) {
 				for (int j = i + 1; j < fichero.size() && fichero.get(j).startsWith(" "); j++) {
-					if(fichero.get(j).endsWith("X")) {
+					if(fichero.get(j).endsWith("X") || (fichero.get(j).length() > 71 && fichero.get(j).endsWith("-"))) {
 						linea = linea + fichero.get(j).substring(0, fichero.get(j).length()-1).trim();
 					}else {
 						linea = linea + fichero.get(j).trim();
@@ -438,6 +482,11 @@ public class mainApp {
 		    		linea = "";
 		    		break;
 		    	case 8:
+		    		if(prueba.containsKey("aviso")) {
+		    			Avisos.LOGGER.log(Level.INFO, prueba.get("aviso"));
+		    			writerCortex.write("***** " + prueba.get("aviso") + " *****");
+		    	    	writerCortex.newLine();
+		    		}
 		    		for(int i = 0; prueba.containsKey("Variable" + i); i++) {
 		    			String lineaEditada = "//   SET " + prueba.get("Variable" + i);
 		    			System.out.println("Escribimos: " + lineaEditada);
@@ -455,6 +504,7 @@ public class mainApp {
 		    	}
 		    }
 	    }else {
+		    Avisos.LOGGER.log(Level.INFO, "Añadir las variables de cabecera");
 		    while((linea = lectorJJOB.readLine()) != null) {
 		    	contadorLinea ++;
 		    	switch (contadorLinea) {
@@ -471,6 +521,19 @@ public class mainApp {
 		    }
 	    }
 	    lectorJJOB.close();
-	    Avisos.LOGGER.log(Level.INFO, "Añadir las variables de cabecera");
+	}
+
+	private static void abrirIncidencias() {
+		// TODO Auto-generated method stub
+		try { 
+		      Desktop desktop = null;
+		      if (Desktop.isDesktopSupported()) {
+		        desktop = Desktop.getDesktop();
+		      }
+
+		       desktop.open(new File("C:\\Cortex\\Incidencias\\" + programa + ".log"));
+		    } catch (IOException ioe) {
+		      ioe.printStackTrace();
+		    }
 	}
 }

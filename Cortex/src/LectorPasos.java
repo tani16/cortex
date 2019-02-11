@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +16,7 @@ public class LectorPasos {
 			index = 0;
 			if (!pasos.get(i).startsWith("CUADRE")) {
 // ------------- Buscamos las variables, con la referencia del igual	
-				if (!pasos.get(i).contains("FILE") && !pasos.get(i).startsWith("*")) {
+				if (!pasos.get(i).contains("FILE ") && !pasos.get(i).startsWith("*")) {
 					while (index != -1) {
 						index = pasos.get(i).indexOf('=', index);
 						if (index != -1 && pasos.get(i).charAt(index + 1) != '(') {
@@ -30,7 +31,7 @@ public class LectorPasos {
 						}
 					}
 				}
-				if(pasos.get(i).contains("FILE")){
+				if(pasos.get(i).contains("FILE ")){
 // -------------- Buscamos los posibles archivos
 					index = 0;
 					index = pasos.get(i).indexOf("MODE=") + 5;
@@ -107,8 +108,8 @@ public class LectorPasos {
 							}
 							archivosEntrada++;
 						}else {
-							for (int k = 1; k <= totalComents; k++) {
-								clave = "ComFichS" + String.valueOf(archivosSalida + 1) + String.valueOf(k);
+							for (int k = 0; k < totalComents; k++) {
+								clave = "ComFichS" + String.valueOf(archivosSalida + 1) + String.valueOf(k + 1);
 								valor = pasos.get(i + k);
 								datos.put(clave, valor);
 							}
@@ -135,10 +136,14 @@ public class LectorPasos {
 					}	
 				}
 		//--------------- Buscar IF - ENDIF
-				if(pasos.get(i).matches("(.*)IF [" + mainApp.letraPaso + "][0-9]{2}(.*)")) {
+//				if(pasos.get(i).matches("(.*)IF [" + mainApp.letraPaso + "][0-9]{2}(.*)")) {
+				if(pasos.get(i).matches("(.*)IF\\s+[" + mainApp.letraPaso + "][0-9]{2}(.*)")) {
+					String aux = pasos.get(i).replaceFirst("IF\\s+","IF ");
 					clave = "IF";
-					index = pasos.get(i).indexOf("IF " + mainApp.letraPaso);
-					valor = "//         " + pasos.get(i).substring(index);
+					//index = pasos.get(i).indexOf("IF " + mainApp.letraPaso);
+					index = aux.indexOf("IF " + mainApp.letraPaso);
+					//valor = "//         " + pasos.get(i).substring(index);
+					valor = "//         " + aux.substring(index);
 					datos.put(clave, valor);
 				}
 				if(pasos.get(i).contains("ENDIF")){
@@ -153,7 +158,7 @@ public class LectorPasos {
 				}
 				
 		//---------------- Buscar condicionales
-				if(pasos.get(i).contains("COND1=") || pasos.get(i).contains("COND1=")) {
+				if(pasos.get(i).contains("COND1=") || pasos.get(i).contains("COND2=")) {
 					if(pasos.get(i).indexOf("COND1") != -1) {
 						int ind = pasos.get(i).indexOf("COND1");
 						ind = pasos.get(i).indexOf("=", ind);
@@ -173,7 +178,7 @@ public class LectorPasos {
 		return datos;	
 	}
 	
-	private String leerCond(String linea, int ind) {
+	public String leerCond(String linea, int ind) {
 		String valor = "";
 		for(int i = ind; i < linea.length(); i++) {
 			if(linea.charAt(i) == ')') {
@@ -184,7 +189,7 @@ public class LectorPasos {
 		return valor;
 	}
 
-	private String leerArchivoSalida(String linea, Map<String, String> datos, int archivosSalida) {
+	private String leerArchivoSalida(String linea, Map<String, String> datos, int archivosSalida){
 		// TODO Auto-generated method stub
 		String valor = "";
 		String claveB = "";
@@ -200,7 +205,19 @@ public class LectorPasos {
 		if (linea.contains("(YES,DELETE")) {
 			valorB = valor;
 		}else {
-			valorB = "No";
+			Map<String, String> infoFich = new HashMap<String, String>();
+			MetodosAux metodosAux = new MetodosAux();
+		    try {
+				infoFich = metodosAux.infoFichero(mainApp.pasoE, mainApp.letraPaso, valor);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		    if (infoFich.get("DISP").equals("NEW")) {
+		    	valorB = valor;
+		    }else {
+		    	valorB = "No";
+		    }
 		}
 		datos.put(claveB, valorB);	
 		
