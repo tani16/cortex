@@ -338,6 +338,11 @@ public class LectorPasos {
 				j = pasos.size() + 1;
 			}
 		}
+		for(int j = 0; j < pasos.size(); j++) {
+			if(pasos.get(j).contains("SORTOUT")) {
+				datos.put("withSortout", "true");
+			}
+		}
 		datos = busquedaAdicional(datos, pasos);
 		
 		return datos;
