@@ -1,11 +1,13 @@
-import java.io.IOException;
+package com.cortex.project;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 public class LectorPasos {
 
-	public Map<String, String> leerPaso(ArrayList<String> pasos) {
+	public Map<String, String> leerPaso(ArrayList<String> pasos) throws ExceptionCortex {
 		// TODO Auto-generated method stub
 		Map<String, String> datos = new HashMap<String, String>();
 		String clave, valor;
@@ -189,7 +191,7 @@ public class LectorPasos {
 		return valor;
 	}
 
-	private String leerArchivoSalida(String linea, Map<String, String> datos, int archivosSalida){
+	private String leerArchivoSalida(String linea, Map<String, String> datos, int archivosSalida) throws ExceptionCortex{
 		// TODO Auto-generated method stub
 		String valor = "";
 		String claveB = "";
@@ -209,9 +211,9 @@ public class LectorPasos {
 			MetodosAux metodosAux = new MetodosAux();
 		    try {
 				infoFich = metodosAux.infoFichero(mainApp.pasoE, mainApp.letraPaso, valor);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (ExceptionCortex e) {
+				Avisos.LOGGER.log(Level.SEVERE, "Fallo al leer el archivo de salida");
+				throw new ExceptionCortex(8, "leerArchivoSalida", "Salida", "Lectura");
 			}
 		    if (infoFich.get("DISP").equals("NEW")) {
 		    	valorB = valor;

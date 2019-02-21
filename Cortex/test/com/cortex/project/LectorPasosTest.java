@@ -1,3 +1,5 @@
+package com.cortex.project;
+
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
@@ -11,7 +13,7 @@ public class LectorPasosTest {
 
 //	------------------ leerPaso -----------------
 	@Test
-	public void testLeerPasoDB2() {
+	public void testLeerPasoDB2() throws ExceptionCortex {
 		mainApp.letraPaso = "D";
 		mainApp.programa = "AUT21D";
 		Map<String, String> salida = new HashMap<String, String>();
@@ -36,7 +38,7 @@ public class LectorPasosTest {
 	}
 	
 	@Test
-	public void testLeerPasoDB2Comentario() {
+	public void testLeerPasoDB2Comentario() throws ExceptionCortex {
 		mainApp.letraPaso = "D";
 		mainApp.programa = "AUT21D";
 		Map<String, String> salida = new HashMap<String, String>();
@@ -63,7 +65,7 @@ public class LectorPasosTest {
 	}
 	
 	@Test
-	public void testLeerPasoDB2Reporte() {
+	public void testLeerPasoDB2Reporte() throws ExceptionCortex {
 		mainApp.letraPaso = "C";
 		mainApp.programa = "AUT01C";
 		Map<String, String> salida = new HashMap<String, String>();
@@ -98,7 +100,7 @@ public class LectorPasosTest {
 	}
 	
 	@Test
-	public void testLeerPasoDB2Condicional() {
+	public void testLeerPasoDB2Condicional() throws ExceptionCortex {
 		mainApp.letraPaso = "C";
 		mainApp.programa = "AUT01C";
 		Map<String, String> salida = new HashMap<String, String>();
@@ -112,7 +114,7 @@ public class LectorPasosTest {
 	}
 	
 	@Test
-	public void testLeerPasoMail() {
+	public void testLeerPasoMail() throws ExceptionCortex {
 		mainApp.letraPaso = "E";
 		mainApp.programa = "AGE04E";
 		Map<String, String> salida = new HashMap<String, String>();

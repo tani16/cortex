@@ -1,3 +1,5 @@
+package com.cortex.project;
+
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -40,7 +42,7 @@ public class mainApp {
 	static WriterPasos writerPasos = new WriterPasos();
 	static String tipoPaso = "";
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 //		String linea, tipoPaso;
 		String linea;
@@ -463,7 +465,7 @@ public class mainApp {
 	return tipoPaso;
 }
 	
-	private static void escribeJJOB(BufferedWriter writerCortex) throws IOException {
+	private static void escribeJJOB(BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JJOB--------------------------
 	    FileReader ficheroJJOB = new FileReader("C:\\Cortex\\Plantillas\\JJOB.txt");

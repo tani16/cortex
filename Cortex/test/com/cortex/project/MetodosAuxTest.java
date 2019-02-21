@@ -1,3 +1,5 @@
+package com.cortex.project;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -35,7 +37,7 @@ public class MetodosAuxTest {
 //	------------------------ cabecera ------------------------------
 	@SuppressWarnings("static-access")
 	@Test
-	public void testCabecera3Variables() throws IOException {
+	public void testCabecera3Variables() throws ExceptionCortex {
 		mainApp.programa = "COM13P";
 		String letraPaso = mainApp.programa.substring(5,6);
 		Map<String, String> datos = new HashMap<String, String>();
@@ -47,7 +49,7 @@ public class MetodosAuxTest {
 	
 	@SuppressWarnings("static-access")
 	@Test
-	public void testCabeceraVariableVacia() throws IOException {
+	public void testCabeceraVariableVacia() throws ExceptionCortex {
 		mainApp.programa = "AGE21C";
 		String letraPaso = mainApp.programa.substring(5,6);
 		Map<String, String> datos = new HashMap<String, String>();
@@ -59,7 +61,7 @@ public class MetodosAuxTest {
 	
 	@SuppressWarnings({ "deprecation", "static-access" })
 	@Test
-	public void testCabeceraVariables() throws IOException {
+	public void testCabeceraVariables() throws ExceptionCortex {
 		mainApp.programa = "COM13P";
 		String letraPaso = mainApp.programa.substring(5,6);
 		Map<String, String> datos = new HashMap<String, String>();
@@ -77,7 +79,7 @@ public class MetodosAuxTest {
 	
 	@SuppressWarnings("static-access")
 	@Test
-	public void testCabeceraOPC() throws IOException {
+	public void testCabeceraOPC() throws ExceptionCortex {
 		mainApp.programa = "COM13P";
 		String letraPaso = mainApp.programa.substring(5,6);
 		Map<String, String> datos = new HashMap<String, String>();
@@ -89,8 +91,8 @@ public class MetodosAuxTest {
 	}
 	
 	@SuppressWarnings("static-access")
-	@Test(expected = FileNotFoundException.class)
-	public void testCabeceraNoExisteFichero() throws IOException {
+	@Test(expected = ExceptionCortex.class)
+	public void testCabeceraNoExisteFichero() throws ExceptionCortex {
 		mainApp.programa = "AAA50A";
 		String letraPaso = mainApp.programa.substring(5,6);
 		
@@ -100,8 +102,8 @@ public class MetodosAuxTest {
 	
 //	------------------------ buscaInfoProc ------------------------------
 	@SuppressWarnings("static-access")
-	@Test(expected = FileNotFoundException.class)
-	public void testBuscaInfoProcNoExisteFichero() throws IOException {
+	@Test(expected = ExceptionCortex.class)
+	public void testBuscaInfoProcNoExisteFichero() throws ExceptionCortex {
 		mainApp.programa = "AAA99AA";
 		String letraPaso = mainApp.programa.substring(5,6);
 		
@@ -110,7 +112,7 @@ public class MetodosAuxTest {
 	
 	@SuppressWarnings("static-access")
 	@Test
-	public void testBuscaInfoProcSalidaPasoMenor10() throws IOException {
+	public void testBuscaInfoProcSalidaPasoMenor10() throws ExceptionCortex {
 		mainApp.programa = "AUT21D";
 		ArrayList<String> esperado = new ArrayList<String>();
 		esperado.add("//EMPLE    DD  DSN=AUT.EMPLE004.AUT21D.&GENEM,DISP=(NEW,CATLG,DELETE),");
@@ -124,7 +126,7 @@ public class MetodosAuxTest {
 	
 	@SuppressWarnings("static-access")
 	@Test
-	public void testBuscaInfoProcSalidaPasoMayor10() throws IOException {
+	public void testBuscaInfoProcSalidaPasoMayor10() throws ExceptionCortex {
 		mainApp.programa = "COM05F";
 		ArrayList<String> esperado = new ArrayList<String>();
 		esperado.add("//SORTIDA  DD  DSN=COM.SORTI008.COM05F.&GENEM,DISP=(NEW,CATLG,DELETE),");
@@ -140,7 +142,7 @@ public class MetodosAuxTest {
 //	------------------------ infoFichero ------------------------------
 	@SuppressWarnings("static-access")
 	@Test
-	public void testInfoFicheroSinProc() throws IOException {
+	public void testInfoFicheroSinProc() throws ExceptionCortex {
 		Map<String, String> datos = new HashMap<String, String>();
 		mainApp.withProc = false;
 		datos = metodosAux.infoFichero(0, "F", "SORTIDA");
@@ -153,7 +155,7 @@ public class MetodosAuxTest {
 	
 	@SuppressWarnings("static-access")
 	@Test
-	public void testInfoFicheroConProc() throws IOException {
+	public void testInfoFicheroConProc() throws ExceptionCortex {
 		Map<String, String> datos = new HashMap<String, String>();
 		mainApp.programa = "AGE01B";
 		mainApp.withProc = true;
@@ -169,7 +171,7 @@ public class MetodosAuxTest {
 	}
 	@SuppressWarnings("static-access")
 	@Test
-	public void testInfoFicheroConProcFicheroCyl() throws IOException {
+	public void testInfoFicheroConProcFicheroCyl() throws ExceptionCortex {
 		Map<String, String> datos = new HashMap<String, String>();
 		mainApp.programa = "AGE01F";
 		mainApp.withProc = true;
@@ -186,7 +188,7 @@ public class MetodosAuxTest {
 	
 	@SuppressWarnings("static-access")
 	@Test
-	public void testInfoFicheroConProcDummy() throws IOException {
+	public void testInfoFicheroConProcDummy() throws ExceptionCortex {
 		Map<String, String> datos = new HashMap<String, String>();
 		mainApp.programa = "AGE20G";
 		mainApp.withProc = true;
@@ -199,7 +201,7 @@ public class MetodosAuxTest {
 //	------------------------ infoReportes ------------------------------
 	@SuppressWarnings("static-access")
 	@Test
-	public void testInfoReporteSinProc() throws IOException {
+	public void testInfoReporteSinProc() throws ExceptionCortex {
 		Map<String, String> datos = new HashMap<String, String>();
 		mainApp.withProc = false;
 		datos = metodosAux.infoReportes("name",0,"F");
@@ -209,7 +211,7 @@ public class MetodosAuxTest {
 	
 	@SuppressWarnings("static-access")
 	@Test
-	public void testInfoReporteNoEncontrado() throws IOException {
+	public void testInfoReporteNoEncontrado() throws ExceptionCortex {
 		Map<String, String> datos = new HashMap<String, String>();
 		mainApp.programa = "AGE01F";
 		mainApp.withProc = true;
@@ -220,7 +222,7 @@ public class MetodosAuxTest {
 	
 	@SuppressWarnings("static-access")
 	@Test
-	public void testInfoReporteEncontrado() throws IOException {
+	public void testInfoReporteEncontrado() throws ExceptionCortex {
 		Map<String, String> datos = new HashMap<String, String>();
 		mainApp.programa = "AGE10M";
 		mainApp.withProc = true;
@@ -232,7 +234,7 @@ public class MetodosAuxTest {
 //	------------------------ infoFTP ------------------------------
 	@SuppressWarnings("static-access")
 	@Test
-	public void testInfoFtpSinProc() throws IOException {		
+	public void testInfoFtpSinProc() throws IOException, ExceptionCortex {		
 		mainApp.withProc = false;
 		
 		assertEquals("name", metodosAux.infoFTP(0, "A", "name"));
@@ -240,7 +242,7 @@ public class MetodosAuxTest {
 	
 	@SuppressWarnings("static-access")
 	@Test
-	public void testInfoFtpConProc() throws IOException {	
+	public void testInfoFtpConProc() throws IOException, ExceptionCortex {	
 		mainApp.programa = "AUT21D";
 		mainApp.withProc = true;
 		
@@ -250,7 +252,7 @@ public class MetodosAuxTest {
 //	------------------------ infoSORTIN ------------------------------
 	@SuppressWarnings("static-access")
 	@Test
-	public void testInfoSORTINSinProc() throws IOException {		
+	public void testInfoSORTINSinProc() throws ExceptionCortex {		
 		mainApp.withProc = false;
 		ArrayList<String> esperado = new ArrayList<String>();
 		esperado.add("**** No encontrado fichero SORTIN");
@@ -264,7 +266,7 @@ public class MetodosAuxTest {
 	
 	@SuppressWarnings("static-access")
 	@Test
-	public void testInfoSORTINConProc() throws IOException {	
+	public void testInfoSORTINConProc() throws ExceptionCortex {	
 		mainApp.programa = "AUT21D";
 		mainApp.withProc = true;
 		ArrayList<String> esperado = new ArrayList<String>();
@@ -279,7 +281,7 @@ public class MetodosAuxTest {
 //	------------------------ infoDSN ------------------------------
 	@SuppressWarnings("static-access")
 	@Test
-	public void testInfoDSNSinProc() throws IOException {		
+	public void testInfoDSNSinProc() throws ExceptionCortex {		
 		mainApp.withProc = false;
 		
 		assertEquals("name", metodosAux.infoDSN(0, "D", "name"));
@@ -288,7 +290,7 @@ public class MetodosAuxTest {
 	
 	@SuppressWarnings("static-access")
 	@Test
-	public void testInfoDSNConProc() throws IOException {	
+	public void testInfoDSNConProc() throws ExceptionCortex {	
 		mainApp.programa = "AGE10M";
 		mainApp.withProc = true;
 		
@@ -298,11 +300,11 @@ public class MetodosAuxTest {
 //	------------------------ infoJFUSION ------------------------------
 	/**
 	 * 
-	 * @throws IOException
+	 * @throws ExceptionCortex
 	 */
 	@SuppressWarnings("static-access")
 	@Test
-	public void testInfoJFUSION() throws IOException {
+	public void testInfoJFUSION() throws ExceptionCortex {
 		// ARRANGE
 		mainApp.programa = "AUT60A";
 		mainApp.withProc = true;

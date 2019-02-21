@@ -1,3 +1,5 @@
+package com.cortex.project;
+
 import java.io.IOException;
 //import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
@@ -24,15 +26,15 @@ public class Avisos {
 	    LOGGER.addHandler(fileHandler);
 	    fileHandler.setLevel(Level.ALL);
 	}
-//    private static class formatoIncidencias extends Formatter {
-//    	@Override
-//    	public String format(LogRecord record) {
-////    		StringBuffer sb = new StringBuffer();
-////    		sb.append(record.getMessage());
-////    		sb.append("/n");
-////    		return sb.toString();
-//    		return record.getMessage();
-//    	}
-//    }
+/*    private static class formatoIncidencias extends Formatter {
+    	@Override
+    	public String format(LogRecord record) {
+//    		StringBuffer sb = new StringBuffer();
+//    		sb.append(record.getMessage());
+//    		sb.append("/n");
+//    		return sb.toString();
+    		return record.getMessage();
+    	}
+    }*/
 }
 

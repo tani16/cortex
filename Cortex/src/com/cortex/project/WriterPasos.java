@@ -1,3 +1,5 @@
+package com.cortex.project;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -17,7 +19,7 @@ public class WriterPasos {
 	
 	
 
-	public void writeDB2(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException {
+	public void writeDB2(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla DB2--------------------------
 	    FileReader ficheroDB2 = new FileReader("C:\\Cortex\\Plantillas\\JDB2.txt");
@@ -161,7 +163,7 @@ public class WriterPasos {
 		}
 	}
 
-	private void writeReports(Map<String, String> datos, BufferedWriter writerCortex, int pasoE, String letraPaso) throws IOException {
+	private void writeReports(Map<String, String> datos, BufferedWriter writerCortex, int pasoE, String letraPaso) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		Map<String, String> infoRep = new HashMap<String, String>();
 		for (int i = 1; datos.containsKey("Reporte" + String.valueOf(i)); i++) {
@@ -192,7 +194,7 @@ public class WriterPasos {
 	}
 	
 	public void writeJFICHSAL(Map<String, String> datos, String numeroPaso, int i, String letraPaso,
-			BufferedWriter writerCortex, int pasoE) throws IOException {
+			BufferedWriter writerCortex, int pasoE) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JFICHENT--------------------------
 	    FileReader ficheroJFICHSAL = new FileReader("C:\\Cortex\\Plantillas\\JFICHSAL.txt");
@@ -316,7 +318,7 @@ public class WriterPasos {
 	    lectorJFICHSAL.close();	 
 	}
 
-	public void writeJFICHENT(Map<String, String> datos, String numeroPaso, int i, String letraPaso, BufferedWriter writerCortex, int pasoE) throws IOException {
+	public void writeJFICHENT(Map<String, String> datos, String numeroPaso, int i, String letraPaso, BufferedWriter writerCortex, int pasoE) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JFICHENT--------------------------
 	    FileReader ficheroJFICHENT = new FileReader("C:\\Cortex\\Plantillas\\JFICHENT.txt");
@@ -383,7 +385,7 @@ public class WriterPasos {
 	    lectorJFICHENT.close();	 
 	}
 
-	public void writeJBORRAF(Map<String, String> datos, String numeroPaso, int i, String letraPaso, BufferedWriter writerCortex, int pasoE) throws IOException {
+	public void writeJBORRAF(Map<String, String> datos, String numeroPaso, int i, String letraPaso, BufferedWriter writerCortex, int pasoE) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JBORRAF--------------------------
 	    FileReader ficheroJBORRAF = new FileReader("C:\\Cortex\\Plantillas\\JBORRAF.txt");
@@ -429,7 +431,7 @@ public class WriterPasos {
 	    }
 	}
 
-	public void writeMAILTXT(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException {
+	public void writeMAILTXT(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JJMAILTXT--------------------------
 	    FileReader ficheroMAILTXT = new FileReader("C:\\Cortex\\Plantillas\\JMAILTXT.txt");
@@ -590,7 +592,7 @@ public class WriterPasos {
 	    writeCondicionales(datos, writerCortex);   
 	}
 
-	public void writeSORT(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException {
+	public void writeSORT(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla SORT--------------------------
 	    FileReader ficheroJSORT = new FileReader("C:\\Cortex\\Plantillas\\JSORT.txt");
@@ -685,7 +687,7 @@ public class WriterPasos {
 	    writeCondicionales(datos, writerCortex);  
 	}
 
-	public void writeJFTPSEND(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException {
+	public void writeJFTPSEND(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JFTPSEND--------------------------
 	    FileReader ficheroJFTPSEND = new FileReader("C:\\Cortex\\Plantillas\\JFTPSEND.txt");
@@ -821,7 +823,7 @@ public class WriterPasos {
 	    writeCondicionales(datos, writerCortex);  
 	}
 	
-	public void writeJFTPREB(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException {
+	public void writeJFTPREB(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JFTPREB--------------------------
 	    FileReader ficheroJFTPREB = new FileReader("C:\\Cortex\\Plantillas\\JFTPREB.txt");
@@ -936,7 +938,7 @@ public class WriterPasos {
 	    writeCondicionales(datos, writerCortex);  
 	}
 	
-	public void writeFTPDEL(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException {
+	public void writeFTPDEL(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JFTDEL--------------------------
 	    FileReader ficheroJFTPDEL = new FileReader("C:\\Cortex\\Plantillas\\JFTPDEL.txt");
@@ -1020,7 +1022,7 @@ public class WriterPasos {
 	    writeCondicionales(datos, writerCortex);  
 	}
 
-	public void writeJMAILMSG(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException {
+	public void writeJMAILMSG(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JMAILMSG--------------------------
 	    FileReader ficheroJMAILMSG = new FileReader("C:\\Cortex\\Plantillas\\JMAILMSG.txt");
@@ -1091,7 +1093,7 @@ public class WriterPasos {
 	    writeCondicionales(datos, writerCortex);  
 	}
 
-	public void writeJFTPSAPP(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException {
+	public void writeJFTPSAPP(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JFTPSAPP--------------------------
 	    FileReader ficheroJFTPSAPP = new FileReader("C:\\Cortex\\Plantillas\\JFTPSAPP.txt");
@@ -1209,7 +1211,7 @@ public class WriterPasos {
 	    writeCondicionales(datos, writerCortex);  
 	}
 
-	public void writeJMAILANX(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException {
+	public void writeJMAILANX(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JMAILANX--------------------------
 	    FileReader ficheroJMAILANX = new FileReader("C:\\Cortex\\Plantillas\\JMAILANX.txt");
@@ -1400,7 +1402,7 @@ public class WriterPasos {
 	    writeCondicionales(datos, writerCortex);  
 	}
 	
-	public void writeJFIVACIO(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException {
+	public void writeJFIVACIO(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JFIVACIO--------------------------
 	    FileReader ficheroJFIVACIO = new FileReader("C:\\Cortex\\Plantillas\\JFIVACIO.txt");
@@ -1443,7 +1445,7 @@ public class WriterPasos {
 	    writeCondicionales(datos, writerCortex);  
 	}
 
-	public void writeJOPCREC(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException {
+	public void writeJOPCREC(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JOPCREC--------------------------
 	    FileReader ficheroJOPCREC = new FileReader("C:\\Cortex\\Plantillas\\JOPCREC.txt");
@@ -1481,7 +1483,7 @@ public class WriterPasos {
 	    writeCondicionales(datos, writerCortex);  
 	}
 	
-	public void writeJFUSION(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException {
+	public void writeJFUSION(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JFUSION--------------------------
 	    FileReader ficheroJFUSION = new FileReader("C:\\Cortex\\Plantillas\\JFUSION.txt");
@@ -1620,7 +1622,7 @@ public class WriterPasos {
 	    writeCondicionales(datos, writerCortex);  
 	}
 	
-	public void writeJGENCUAD(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException {
+	public void writeJGENCUAD(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JGENCUAD--------------------------
 	    FileReader ficheroJGENCUAD = new FileReader("C:\\Cortex\\Plantillas\\JGENCUAD.txt");
@@ -1754,7 +1756,7 @@ public class WriterPasos {
 	    writeCondicionales(datos, writerCortex);  
 	}
 
-	public void writeJPAPYRUS(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException {
+	public void writeJPAPYRUS(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JPAPYRUS--------------------------
 	    FileReader ficheroJPAPYRUS = new FileReader("C:\\Cortex\\Plantillas\\JPAPYRUS.txt");
@@ -1846,7 +1848,7 @@ public class WriterPasos {
 	    writeCondicionales(datos, writerCortex);  
 	}
 
-	public void writeJPAUSA(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException {
+	public void writeJPAUSA(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JPAUSA--------------------------
 	    FileReader ficheroJPAUSA = new FileReader("C:\\Cortex\\Plantillas\\JPAUSA.txt");
@@ -1881,7 +1883,7 @@ public class WriterPasos {
 	    writeCondicionales(datos, writerCortex);  
 	}
 
-	public void writeJSOFCHEC(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException {
+	public void writeJSOFCHEC(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JSOFCHEC--------------------------
 	    FileReader ficheroJSOFCHEC = new FileReader("C:\\Cortex\\Plantillas\\JSOFCHEC.txt");
@@ -1971,7 +1973,7 @@ public class WriterPasos {
 	    writeCondicionales(datos, writerCortex);  
 	}
 
-	public void writeJSOFINF(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException {
+	public void writeJSOFINF(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JSOFINF--------------------------
 	    FileReader ficheroJSOFINF = new FileReader("C:\\Cortex\\Plantillas\\JSOFINF.txt");
@@ -2020,7 +2022,7 @@ public class WriterPasos {
 	    writeCondicionales(datos, writerCortex);  
 	}
 
-	public void writeJFTPS123(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException {
+	public void writeJFTPS123(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JSOFINF--------------------------
 	    FileReader ficheroJFTPS123 = new FileReader("C:\\Cortex\\Plantillas\\JFTPS123.txt");
@@ -2136,7 +2138,7 @@ public class WriterPasos {
 	    writeCondicionales(datos, writerCortex);  
 	}
 
-	public void writeJFTPVER(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException {
+	public void writeJFTPVER(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JFTPVER--------------------------
 	    FileReader ficheroJFTPVER = new FileReader("C:\\Cortex\\Plantillas\\JFTPVER.txt");
@@ -2218,7 +2220,7 @@ public class WriterPasos {
 	    writeCondicionales(datos, writerCortex);  
 	}
 
-	public void writeJMAIL123(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException {
+	public void writeJMAIL123(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JMAIL123--------------------------
 	    FileReader ficheroJMAIL123 = new FileReader("C:\\Cortex\\Plantillas\\JMAIL123.txt");
@@ -2401,7 +2403,7 @@ public class WriterPasos {
 	    writeCondicionales(datos, writerCortex);  
 	}
 	
-	public void writeJIEBGENE(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException {
+	public void writeJIEBGENE(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JIEBGCOPY--------------------------
 	    FileReader ficheroJIEBGENE = new FileReader("C:\\Cortex\\Plantillas\\JIEBGENE.txt");
@@ -2497,7 +2499,7 @@ public class WriterPasos {
 	}
 
 	public void writeJBORRARFPasos(Map<String, String> datos, String letraPaso, int pasoE,
-			BufferedWriter writerCortex) throws IOException {
+			BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JBORRAF--------------------------
 	    FileReader ficheroJBORRAF = new FileReader("C:\\Cortex\\Plantillas\\JBORRAF.txt");
@@ -2544,7 +2546,7 @@ public class WriterPasos {
 	    writeCondicionales(datos, writerCortex);  
 	}
 
-	public void writeJFIVERDS(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException {
+	public void writeJFIVERDS(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JFIVERDS--------------------------
 	    FileReader ficheroJFIVERDS = new FileReader("C:\\Cortex\\Plantillas\\JFIVERDS.txt");
@@ -2592,7 +2594,7 @@ public class WriterPasos {
 	    writeCondicionales(datos, writerCortex);  
 	}
 	
-	public void writeJFTBSEND(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException {
+	public void writeJFTBSEND(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JFTBSEND--------------------------
 	    FileReader ficheroJFTBSEND = new FileReader("C:\\Cortex\\Plantillas\\JFTBSEND.txt");
@@ -2728,7 +2730,7 @@ public class WriterPasos {
 	    writeCondicionales(datos, writerCortex);  
 	}
 
-	public void writeJPGM(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException {
+	public void writeJPGM(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 		// TODO Auto-generated method stub
 		//----------------Fichero de plantilla JPGM--------------------------
 	    FileReader ficheroJPGM = new FileReader("C:\\Cortex\\Plantillas\\JPGM.txt");
