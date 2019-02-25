@@ -465,7 +465,7 @@ public class WriterPasos {
 					linea = linea.trim();
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("ADRDES", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDES", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
@@ -475,7 +475,7 @@ public class WriterPasos {
 					linea = linea.trim();
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("ADRDE1", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDE1", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
@@ -485,7 +485,7 @@ public class WriterPasos {
 					linea = linea.trim();
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("ADRDE2", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDE2", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
@@ -496,7 +496,7 @@ public class WriterPasos {
 					masMail = false;
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("ADRDE3", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDE3", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 					if (!fi.isEmpty()) {
@@ -532,7 +532,7 @@ public class WriterPasos {
 					linea = linea.trim();
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("DADA721", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("DADA721", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
@@ -542,7 +542,7 @@ public class WriterPasos {
 					linea = linea.trim();
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("DADA722", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("DADA722", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
@@ -552,7 +552,7 @@ public class WriterPasos {
 					linea = linea.trim();
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("DADA723", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("DADA723", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
@@ -562,7 +562,7 @@ public class WriterPasos {
 					linea = linea.trim();
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("DADA724", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("DADA724", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
@@ -573,7 +573,7 @@ public class WriterPasos {
 					linea = linea.trim();
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("DADA725", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("DADA725", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
@@ -629,7 +629,7 @@ public class WriterPasos {
 	    		break;
 	    	case 5:
 	    		ArrayList<String> sortIn = new ArrayList<String>();
-	    		sortIn =  metodosAux.infoSORTIN(pasoE, letraPaso);
+	    		sortIn =  (ArrayList<String>) metodosAux.infoSORTIN(pasoE, letraPaso);
 	    		for (int j = 0; j < sortIn.size(); j++) {
 	    			System.out.println("Escribimos: " + sortIn.get(j));
 		    		writerCortex.write(sortIn.get(j));
@@ -1276,7 +1276,7 @@ public class WriterPasos {
 					linea = linea.trim();
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("ADRDES", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDES", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
@@ -1286,7 +1286,7 @@ public class WriterPasos {
 					linea = linea.trim();
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("ADRDE1", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDE1", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
@@ -1296,7 +1296,7 @@ public class WriterPasos {
 					linea = linea.trim();
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("ADRDE2", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDE2", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
@@ -1307,7 +1307,7 @@ public class WriterPasos {
 					masMail = false;
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("ADRDE3", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDE3", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 					if (!fi.isEmpty()) {
@@ -1343,7 +1343,7 @@ public class WriterPasos {
 					linea = linea.trim();
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("DADA721", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("DADA721", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
@@ -1353,7 +1353,7 @@ public class WriterPasos {
 					linea = linea.trim();
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("DADA722", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("DADA722", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
@@ -1363,7 +1363,7 @@ public class WriterPasos {
 					linea = linea.trim();
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("DADA723", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("DADA723", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
@@ -1373,7 +1373,7 @@ public class WriterPasos {
 					linea = linea.trim();
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("DADA724", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("DADA724", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
@@ -1383,7 +1383,7 @@ public class WriterPasos {
 					linea = linea.trim();
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("DADA725", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("DADA725", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
@@ -2282,7 +2282,7 @@ public class WriterPasos {
 					linea = linea.trim();
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("ADRDES", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDES", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
@@ -2292,7 +2292,7 @@ public class WriterPasos {
 					linea = linea.trim();
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("ADRDE1", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDE1", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
@@ -2302,7 +2302,7 @@ public class WriterPasos {
 					linea = linea.trim();
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("ADRDE2", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDE2", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
@@ -2312,7 +2312,7 @@ public class WriterPasos {
 					linea = linea.trim();
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("ADRDE3", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDE3", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 					if (!fi.isEmpty()) {
@@ -2344,7 +2344,7 @@ public class WriterPasos {
 					linea = linea.trim();
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("DADA721", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("DADA721", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
@@ -2354,7 +2354,7 @@ public class WriterPasos {
 					linea = linea.trim();
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("DADA722", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("DADA722", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
@@ -2364,7 +2364,7 @@ public class WriterPasos {
 					linea = linea.trim();
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("DADA723", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("DADA723", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
@@ -2374,7 +2374,7 @@ public class WriterPasos {
 					linea = linea.trim();
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("DADA724", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("DADA724", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
@@ -2384,7 +2384,7 @@ public class WriterPasos {
 					linea = linea.trim();
 				}
 				else {
-					salida = MetodosAux.ComprobarTamañoLinea("DADA725", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize("DADA725", linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
@@ -2531,7 +2531,7 @@ public class WriterPasos {
     	writerCortex.write("***** REVISAR SYSIN Cortex");
     	writerCortex.newLine();
     	if (mainApp.withProc) {
-    		lineaProc = metodosAux.buscaInfoProc(pasoE, letraPaso, "SYSIN");
+    		lineaProc = (ArrayList<String>) metodosAux.buscaInfoProc(pasoE, letraPaso, "SYSIN");
 		    for(int i = 0; i < lineaProc.size(); i++) {
 		    	Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + lineaProc.get(i));
 		    	System.out.println("Escribimos: " + lineaProc.get(i).replace("//", "**"));
@@ -2561,7 +2561,7 @@ public class WriterPasos {
 	    String[] valor = {"A00TS", numeroPaso};
 	    histPasos.put(numeroPasoE, valor);
 	    //----------------Método---------------------------------------------
-	    lineaProc = metodosAux.buscaInfoProc(pasoE, letraPaso, "SYSIN");
+	    lineaProc = (ArrayList<String>) metodosAux.buscaInfoProc(pasoE, letraPaso, "SYSIN");
 	    
 	    while((linea = lectorJFIVERDS.readLine()) != null) {
 	    	contadorLinea ++;

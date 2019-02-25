@@ -477,7 +477,7 @@ public class mainApp {
 	    //----------------Método---------------------------------------------
 	    if(withCntl) {
 		    Map<String, String> prueba = new HashMap<String, String>();
-		    prueba = metodosAux.cabecera(pasoE, letraPaso);
+		    prueba = metodosAux.cabecera();
 		    while((linea = lectorJJOB.readLine()) != null) {
 		    	contadorLinea ++;
 		    	switch (contadorLinea) {

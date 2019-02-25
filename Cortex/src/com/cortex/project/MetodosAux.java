@@ -3,9 +3,9 @@ package com.cortex.project;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -13,9 +13,13 @@ public class MetodosAux {
 
 	//	static Avisos  avisos = new Avisos();
 	LectorPasos lectorPasos =  new LectorPasos();
-
+/**
+ * Recibe una cadena y comprueba si tiene literales, devolviendo verdadero si es así
+ * 
+ * @param param
+ * @return 
+ */
 	public boolean checkLiteralesPARDB2(String param) {
-		// TODO Auto-generated method stub
 		if (!param.startsWith(Constantes.AMPERSAND)) {
 			return true;
 		}
@@ -27,32 +31,37 @@ public class MetodosAux {
 		return false;
 	}
 	
-	public String tratarLiteralesPARDB2(String PARDB2) {
-		// TODO Auto-generated method stub
-		int index = PARDB2.indexOf(Constantes.EQUALS);
+	/**
+	 * Recibe una cadena, y la transforma quitando los '-'
+	 * @param PARDB2
+	 * @return
+	 */
+	public String tratarLiteralesPARDB2(String parDB2) {
+		int index = parDB2.indexOf(Constantes.EQUALS);
 		
 		while (index != -1) {
 			for (int i = index; i >= 0; i--) {
-				if (PARDB2.charAt(i) == '-' || i == 0) {
+				if (parDB2.charAt(i) == '-' || i == 0) {
 					i = i > 0 ? i + 1 : i;
-					String aux = PARDB2.substring(i, index + 1);
-					PARDB2 = PARDB2.replace(aux, Constantes.EMPTY);
+					String aux = parDB2.substring(i, index + 1);
+					parDB2 = parDB2.replace(aux, Constantes.EMPTY);
 					break;
 				}
 			}
-			index = PARDB2.indexOf(Constantes.EQUALS, index+1);
+			index = parDB2.indexOf(Constantes.EQUALS, index+1);
 		}
 /*		if (index != -1) {
 			
 		}*/
 		
-		return PARDB2;
+		return parDB2;
 	}
 
-	public ArrayList<String> buscaInfoProc(int pasoE, String letraPaso, String nombre) throws ExceptionCortex {
-		boolean seguir = true, buscar = false;	
+	public List<String> buscaInfoProc(int pasoE, String letraPaso, String nombre) throws ExceptionCortex {
+		boolean seguir = true;
+		boolean buscar = false;	
 		String linea;
-		ArrayList<String> infoFichero = new ArrayList<String>();
+		ArrayList<String> infoFichero = new ArrayList<>();
 		//----------------Fichero de plantilla JPROC--------------------------
 	    FileReader ficheroPROC = null;
 		try {
@@ -65,7 +74,7 @@ public class MetodosAux {
 		try(BufferedReader lectorPROC = new BufferedReader(ficheroPROC)){
 	    
 			String numeroPaso;    
-		    numeroPaso = (pasoE < 10) ? "0" + String.valueOf(pasoE) : String.valueOf(pasoE) ;
+		    numeroPaso = (pasoE < 10) ? "0" + pasoE : String.valueOf(pasoE) ;
 		    
 		    while((linea = lectorPROC.readLine()) != null && seguir) {
 		    	if(linea.startsWith("//" + letraPaso + numeroPaso)) {
@@ -91,15 +100,17 @@ public class MetodosAux {
 	}
 	
 	public Map<String, String> infoFichero(int pasoE, String letraPaso, String nombre) throws ExceptionCortex {
-		// TODO Auto-generated method stub
 		ArrayList<String> infoFichero;
-		Map<String, String> infoFich = new HashMap<String, String>();
+		Map<String, String> infoFich = new HashMap<>();
 		
 		if(mainApp.withProc) {
-			infoFichero = buscaInfoProc(pasoE, letraPaso, nombre);
+			infoFichero = (ArrayList<String>) buscaInfoProc(pasoE, letraPaso, nombre);
 		    
-		    String clave, valor;
-	    	long primario = 0, secundario = 0, tamaño; 
+		    String clave;
+		    String valor;
+	    	long primario = 0;
+	    	long secundario = 0; 
+	    	long tamanio; 
 	    	int numDSN = 0;
 		    for(int j = 0; j < infoFichero.size(); j++) {
 		    	int index = 1;
@@ -123,7 +134,8 @@ public class MetodosAux {
 				}
 			    if(infoFichero.get(j).contains(Constantes.SPACE) && !infoFich.get(Constantes.SPACE).equals("CYL") && !infoFich.get(Constantes.SPACE).equals("TRK")) {
 			    	if (infoFich.containsKey(Constantes.LRECL)) {
-			    		int ini = 1, fin = 2;
+			    		int ini = 1;
+			    		int fin = 2;
 				    	ini = infoFichero.get(j).lastIndexOf('(');
 				    	for(int i = ini; i < infoFichero.get(j).length(); i++) {
 				    		if(infoFichero.get(j).charAt(i) == ',') {
@@ -131,8 +143,8 @@ public class MetodosAux {
 				    			break;
 				    		}
 				    	}
-				    	tamaño = Long.valueOf(infoFichero.get(j).substring(ini + 1, fin));
-				    	primario = Long.parseLong(infoFich.get(Constantes.SPACE)) * tamaño / Long.parseLong(infoFich.get(Constantes.LRECL)) / 1000;
+				    	tamanio = Long.valueOf(infoFichero.get(j).substring(ini + 1, fin));
+				    	primario = Long.parseLong(infoFich.get(Constantes.SPACE)) * tamanio / Long.parseLong(infoFich.get(Constantes.LRECL)) / 1000;
 				    	primario = primario < 5 ? 10 : primario;
 				    	
 				    	ini = fin;
@@ -142,8 +154,8 @@ public class MetodosAux {
 				    			break;
 				    		}
 				    	}
-				    	tamaño = Long.valueOf(infoFichero.get(j).substring(ini + 1, fin));
-				    	secundario = Long.parseLong(infoFich.get(Constantes.SPACE)) * tamaño / Long.parseLong(infoFich.get(Constantes.LRECL)) / 1000;; 
+				    	tamanio = Long.valueOf(infoFichero.get(j).substring(ini + 1, fin));
+				    	secundario = Long.parseLong(infoFich.get(Constantes.SPACE)) * tamanio / Long.parseLong(infoFich.get(Constantes.LRECL)) / 1000; 
 				    	secundario = secundario < 3 ? 3 : secundario;
 			    	}else {
 						infoFich.put(Constantes.LRECL,Constantes.LRECL);
@@ -152,14 +164,15 @@ public class MetodosAux {
 			    	if(infoFichero.get(j).contains(Constantes.SPACE) && infoFich.get(Constantes.SPACE).equals("CYL")) {
 			    		primario = 15;
 			    		secundario = 1;
-						Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " //Comprobar fichero CYL migrado correctamente");
+			    		String mensaje = letraPaso + String.valueOf(pasoE) + " //Comprobar fichero CYL migrado correctamente";
+						Avisos.LOGGER.log(Level.INFO, mensaje);
 			    		//infoFich.put("LRECL","CYL");
 			    	}
 			    }
 		    }
 		    
 		    clave = Constantes.DEFINICION;
-		    valor = "(" + infoFich.get(Constantes.LRECL) + ",(" + String.valueOf(primario) + "," + String.valueOf(secundario) + "))";
+		    valor = "(" + infoFich.get(Constantes.LRECL) + ",(" + primario + "," + secundario + "))";
 			infoFich.put(clave, valor);
 			
 			if(!infoFich.containsKey("DSN")) {
@@ -186,13 +199,13 @@ public class MetodosAux {
 	}
 
 	public Map<String, String> infoReportes(String nombre, int pasoE, String letraPaso) throws ExceptionCortex {
-		// TODO Auto-generated method stub
 		ArrayList<String> infoFichero;
-		Map<String, String> infoRep = new HashMap<String, String>();
-		String clave, valor;
+		Map<String, String> infoRep = new HashMap<>();
+		String clave; 
+		String valor;
 		
 		if (mainApp.withProc) {
-			infoFichero = buscaInfoProc(pasoE, letraPaso, nombre);
+			infoFichero = (ArrayList<String>) buscaInfoProc(pasoE, letraPaso, nombre);
 			
 			if (infoFichero.size() == 1) {
 				clave = Constantes.REPORT_KEY;
@@ -201,7 +214,8 @@ public class MetodosAux {
 			}else {
 				clave = Constantes.REPORT_KEY;
 				valor = "* Error al leer línea de Reporte - Nombre reporte: " + nombre; 
-				Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " // Error al leer el reporte - Nombre reporte: " + nombre);
+				String mensaje = letraPaso + String.valueOf(pasoE) + " // Error al leer el reporte - Nombre reporte: " + nombre;
+				Avisos.LOGGER.log(Level.INFO, mensaje);
 			}
 				
 			infoRep.put(clave, valor);
@@ -214,25 +228,20 @@ public class MetodosAux {
 	}
 
 	public String infoFTP(int pasoE, String letraPaso, String fhost) throws ExceptionCortex  {
-		// TODO Auto-generated method stub
-		boolean seguir = true, buscar = false;	
-		@SuppressWarnings("unused")
-		String linea, clave, valor = Constantes.EMPTY;
+		boolean seguir = true;
+		boolean buscar = false;	
+		String linea;
+//		String clave;
+		String valor = fhost;
 		int index = 0;
 		
 		if(mainApp.withProc) {
 			//----------------Fichero de plantilla JPROC--------------------------
-		    FileReader ficheroPROC = null;
-			try {
-				ficheroPROC = new FileReader(Constantes.RUTA_PROC + mainApp.programa.substring(0,6) + Constantes.EXTENSION_TXT);
-			} catch (FileNotFoundException e) {
-				Avisos.LOGGER.log(Level.SEVERE, Constantes.LOG_PROC_NOT_FOUND);
-				throw new ExceptionCortex(8, "infoFTP", "PROC", "File");
-			}
+		    FileReader ficheroPROC = TratamientoDeFicheros.openFile("PROC");
 			
 			try (BufferedReader lectorPROC = new BufferedReader(ficheroPROC)){
 			    String numeroPaso;    
-			    numeroPaso = (pasoE < 10) ? "0" + String.valueOf(pasoE) : String.valueOf(pasoE) ;
+			    numeroPaso = (pasoE < 10) ? "0" + pasoE : String.valueOf(pasoE) ;
 			    
 			    while((linea = lectorPROC.readLine()) != null && seguir) {
 			    	if(linea.startsWith("//" + letraPaso + numeroPaso)) {
@@ -240,7 +249,7 @@ public class MetodosAux {
 			    	}
 			    	if(buscar && linea.contains(fhost + ".") && linea.contains("DSN=")){
 		    			index = linea.indexOf('=', index);
-		    			clave = lectorPasos.leerClave(linea, index);
+//		    			clave = lectorPasos.leerClave(linea, index);
 						valor = lectorPasos.leerValor(linea, index);
 						buscar = false;
 						seguir = false;
@@ -250,14 +259,12 @@ public class MetodosAux {
 				Avisos.LOGGER.log(Level.SEVERE, Constantes.LOG_PROC_NOT_FOUND);
 				throw new ExceptionCortex(9, "infoFTP", "PROC", Constantes.LECTURA);
 			}
-		}else {
-			valor = fhost;
 		}
+		
 		return valor;
 	}
 
 //	public Map<String, String> infoSort(int paso, String letraPaso) throws IOException {
-//		// TODO Auto-generated method stub
 //	    Map<String, String> infoFich   = new HashMap<String, String>();
 //	    String clave, valor;
 //	    
@@ -269,17 +276,17 @@ public class MetodosAux {
 //		return infoFich;
 //	}
 	
-	public ArrayList<String> infoSORTIN(int pasoE, String letraPaso) throws ExceptionCortex {
-		// TODO Auto-generated method stub
-		ArrayList<String> infoFichero = new ArrayList<String>();
+	public List<String> infoSORTIN(int pasoE, String letraPaso) throws ExceptionCortex {
+		ArrayList<String> infoFichero = new ArrayList<>();
 		ArrayList<String> infoFicheroProc;
-		int ini = 0, fin = 0;
+		int ini = 0;
+		int fin = 0;
 		
 		if(mainApp.withProc) {
 			String primero;
 			String segundo;
 			String tercero;
-			infoFicheroProc = buscaInfoProc(pasoE, letraPaso, "SORTIN");
+			infoFicheroProc = (ArrayList<String>) buscaInfoProc(pasoE, letraPaso, "SORTIN");
 			for(int i = 0; i < infoFicheroProc.size(); i++) {
 				fin = infoFicheroProc.get(i).indexOf("DSN=");
 				if (fin != -1) {
@@ -294,13 +301,13 @@ public class MetodosAux {
 			}
 		}else {
 			infoFichero.add("**** No encontrado fichero SORTIN");
-			Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " //Comprobar fichero CYL migrado correctamente");
+			String mensaje = letraPaso + String.valueOf(pasoE) + " //Comprobar fichero CYL migrado correctamente";
+			Avisos.LOGGER.log(Level.INFO, mensaje);
 		}
 		return infoFichero;
 	}
 
 	public Map<String, String> infoFtpReb(int pasoE, String letraPaso) throws ExceptionCortex {
-		// TODO Auto-generated method stub
 		Map<String, String> infoFich;
 		
 		infoFich = infoFichero(pasoE, letraPaso, "SORTI1");
@@ -309,49 +316,43 @@ public class MetodosAux {
 	}
 	
 	public String infoDSN(int pasoE, String letraPaso, String name) throws ExceptionCortex {
-		// TODO Auto-generated method stub
-		boolean seguir = true, buscar = false;	
-		@SuppressWarnings("unused")
-		String linea, clave, valor = Constantes.EMPTY;
+		boolean seguir = true;
+		boolean buscar = false;	
+		String linea;
+//		String clave;
+		String valor = name;
 		int index = 0;
+		
 		if(mainApp.withProc) {
 			//----------------Fichero de plantilla JPROC--------------------------
-		    FileReader ficheroPROC = null;
-			try {
-				ficheroPROC = new FileReader("C:\\Cortex\\PROC\\" + mainApp.programa.substring(0,6) + ".txt");
-			} catch (FileNotFoundException e) {
-				Avisos.LOGGER.log(Level.SEVERE, Constantes.LOG_PROC_NOT_FOUND);
-				throw new ExceptionCortex(2, "infoDSN", "PROC", "File");
-			}
+		    FileReader ficheroPROC = TratamientoDeFicheros.openFile("PROC");
 			
 			try(BufferedReader lectorPROC = new BufferedReader(ficheroPROC)){	    
 			    String numeroPaso;    
-			    numeroPaso = (pasoE < 10) ? "0" + String.valueOf(pasoE) : String.valueOf(pasoE) ;
+			    numeroPaso = (pasoE < 10) ? "0" + pasoE : String.valueOf(pasoE) ;
 			    
 			    while((linea = lectorPROC.readLine()) != null && seguir) {
 			    	if(linea.startsWith("//" + letraPaso + numeroPaso)) {
 			    		buscar = true;
 			    	}
 			    	if(buscar && linea.startsWith("//" + name + "  ")){
-			    			index = linea.indexOf('=', index);
-			    			clave = lectorPasos.leerClave(linea, index);
-							valor = lectorPasos.leerValor(linea, index);
-							buscar = false;
-							seguir = false;			    		
+		    			index = linea.indexOf('=', index);
+//		    			clave = lectorPasos.leerClave(linea, index);
+						valor = lectorPasos.leerValor(linea, index);
+						buscar = false;
+						seguir = false;			    		
 			    	}	    	
 			    }
 			}catch (Exception e) {
 				Avisos.LOGGER.log(Level.SEVERE, "Error leyendo el PROC");
 				throw new ExceptionCortex(1, "infoDSN", "PROC", Constantes.LECTURA);
 			}
-		}else {
-			valor = name;
 		}
+		
 		return valor;
 	}
 	
 	public void infoJFUSION(Map<String, String> datos, int pasoE, String letraPaso) throws ExceptionCortex {
-		// TODO Auto-generated method stub
 		Map<String, String> infoFich;
 		String[] ficheros;
 		int contadorFicheros = 0;
@@ -359,8 +360,8 @@ public class MetodosAux {
 		String valor;
 		
 		pasoE -= 2;
-		for(int i = 1; datos.containsKey("FICHA" + String.valueOf(i)); i++) {
-			ficheros = datos.get("FICHA" + String.valueOf(i)).split(",");
+		for(int i = 1; datos.containsKey("FICHA" + i); i++) {
+			ficheros = datos.get("FICHA" + i).split(",");
 			ficheros[0] = ficheros[0].replace("ENTRADA=", Constantes.EMPTY);
 			
 			if(ficheros[0].contains(Constantes.SORTIDA)) {
@@ -385,19 +386,12 @@ public class MetodosAux {
 		
 	}
 	
-	public static ArrayList<String> ComprobarTamañoLinea(String cabecera, String linea, String fi, Map<String, String> datos) {
-		// TODO Auto-generated method stub
-		ArrayList<String> salida = new ArrayList<String>();
+	public static List<String> checkLineSize(String cabecera, String linea, String fi, Map<String, String> datos) {
+		ArrayList<String> salida = new ArrayList<>();
 		if((linea.trim() + fi + datos.get(cabecera)).length() < 72) {
 			if(datos.get(cabecera) == null) {
 				salida.add(0 ,linea.trim() + fi.trim());
 			}else {
-//				if (fi.isEmpty()) {
-//					salida.add(0 ,linea.trim() + fi.trim() + datos.get(cabecera));
-//				}else {
-//					salida.add(0 ,linea.trim() + fi.trim() + " " + datos.get(cabecera));
-//				}
-//				salida.add(0 ,linea.trim() + fi.trim() + datos.get(cabecera));
 				salida.add(0 ,linea.trim() + fi + datos.get(cabecera));
 			}
 			salida.add(1, Constantes.EMPTY);			 
@@ -424,25 +418,20 @@ public class MetodosAux {
 	}
 
 	public Map<String, String> infomultiDSN(int pasoE, String letraPaso, String name) throws ExceptionCortex {
-		// TODO Auto-generated method stub
-		boolean seguir = true, buscar = false;	
-		String linea, clave, valor = Constantes.EMPTY;
-		int index = 0, contador=0;
-		Map<String, String> datos = new HashMap<String, String>();
+		boolean seguir = true;
+		boolean buscar = false;	
+		String linea;
+		String clave;
+		String valor = Constantes.EMPTY;
+		int index = 0;
+		int contador=0;
+		Map<String, String> datos = new HashMap<>();
 		
 		
 		if(mainApp.withProc) {
 			//----------------Fichero de plantilla JPROC--------------------------
-		    FileReader ficheroPROC = null;
-		    try {		    	
-				ficheroPROC = new FileReader(Constantes.RUTA_PROC + mainApp.programa.substring(0,6) + Constantes.EXTENSION_TXT);
-		    }catch (Exception e) {
-		    	Avisos.LOGGER.log(Level.SEVERE, Constantes.LOG_PROC_NOT_FOUND);
-		    	throw new ExceptionCortex(3, "infomultiDSN", "PROC", "File");
-		    }
+		    FileReader ficheroPROC = TratamientoDeFicheros.openFile("PROC");
 		    try (BufferedReader lectorPROC = new BufferedReader(ficheroPROC)){		    
-			//-----------------------------------------------------------------------
-		    
 			    String numeroPaso;    
 			    numeroPaso = (pasoE < 10) ? "0" + pasoE : String.valueOf(pasoE) ;
 			    
@@ -482,20 +471,21 @@ public class MetodosAux {
 		return datos;
 	}
 
-	public Map<String, String> cabecera(int pasoE, String letraPaso) throws ExceptionCortex {
-		// TODO Auto-generated method stub
-		boolean seguir = true, buscar = false;	
-		String linea, clave, valor = Constantes.EMPTY;
-		int index = 0, contador=0, numVariable=0, numOPC=0, finIndex = 0;
-		Map<String, String> datos = new HashMap<String, String>();
+	public Map<String, String> cabecera() throws ExceptionCortex {
+		boolean seguir = true;
+		boolean buscar = false;	
+		String linea;
+		String clave;
+		String valor = Constantes.EMPTY;
+		int index = 0;
+		int contador = 0;
+		int numVariable = 0;
+		int numOPC = 0; 
+		int finIndex = 0;
+		Map<String, String> datos = new HashMap<>();
+		
 		//----------------Fichero de plantilla CNTL--------------------------
-	    FileReader ficheroCNTL = null;
-		try {
-			ficheroCNTL = new FileReader(Constantes.RUTA_CNTL + mainApp.programa.substring(0,6) + Constantes.EXTENSION_TXT);
-		} catch (FileNotFoundException e) {
-			Avisos.LOGGER.log(Level.SEVERE, "Archivo CNTL no encontrado");
-			throw new ExceptionCortex(5, "cabecera", "CNTL", "File");
-		}
+	    FileReader ficheroCNTL = TratamientoDeFicheros.openFile(Constantes.CNTL);
 		
 		try (BufferedReader lectorCNTL = new BufferedReader(ficheroCNTL)){
 		    while((linea = lectorCNTL.readLine()) != null && seguir) {
@@ -550,15 +540,13 @@ public class MetodosAux {
 	private boolean isNombreEqualsValor(String valor) {
 		
 		int index = 0;
-		String variable = "" , literal ="";
+		String variable = "";
+		String literal ="";
 		index = valor.indexOf(Constantes.EQUALS);
 		variable = valor.substring(0, index);
 		literal = valor.substring(index + 1);
-		if (literal.contains(variable)) {
-			return true;
-		}else {
-			return false;
-		}
+
+		return literal.contains(variable);
 	}
 
 }

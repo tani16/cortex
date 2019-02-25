@@ -16,6 +16,8 @@ public final class Constantes {
 	static final String MGMTCLAS = "MGMTCLAS";
 	static final String REPORT_KEY = "ReportKey";
 	static final String SORTIDA = "SORTIDA=";
+	static final String PROC = "PROC";
+	static final String CNTL = "CNTL";
 	
 	//Rutas
 	static final String RUTA_PCL = "C:\\Cortex\\PCL.txt";

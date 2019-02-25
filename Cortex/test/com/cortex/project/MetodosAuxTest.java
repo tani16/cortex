@@ -39,10 +39,9 @@ public class MetodosAuxTest {
 	@Test
 	public void testCabecera3Variables() throws ExceptionCortex {
 		mainApp.programa = "COM13P";
-		String letraPaso = mainApp.programa.substring(5,6);
-		Map<String, String> datos = new HashMap<String, String>();
+		Map<String, String> datos = new HashMap<>();
 		
-		datos = metodosAux.cabecera(1, letraPaso);
+		datos = metodosAux.cabecera();
 		
 		assertTrue(datos.containsKey("Variable2"));
 	}
@@ -51,10 +50,9 @@ public class MetodosAuxTest {
 	@Test
 	public void testCabeceraVariableVacia() throws ExceptionCortex {
 		mainApp.programa = "AGE21C";
-		String letraPaso = mainApp.programa.substring(5,6);
-		Map<String, String> datos = new HashMap<String, String>();
+		Map<String, String> datos = new HashMap<>();
 		
-		datos = metodosAux.cabecera(1, letraPaso);
+		datos = metodosAux.cabecera();
 	    
 		assertEquals("CODCIAS=''", datos.get("Variable0"));
 	}
@@ -63,12 +61,11 @@ public class MetodosAuxTest {
 	@Test
 	public void testCabeceraVariables() throws ExceptionCortex {
 		mainApp.programa = "COM13P";
-		String letraPaso = mainApp.programa.substring(5,6);
-		Map<String, String> datos = new HashMap<String, String>();
+		Map<String, String> datos = new HashMap<>();
 		String[] esperados = {"ACC='3'", "FECHAM='&FDUANTP'", "GENEM=&GEUANTN"};
 		String[] salida = new String[3];
 		
-		datos = metodosAux.cabecera(1, letraPaso);
+		datos = metodosAux.cabecera();
 
 	    salida[0] = datos.get("Variable0");
 	    salida[1] = datos.get("Variable1");
@@ -81,11 +78,10 @@ public class MetodosAuxTest {
 	@Test
 	public void testCabeceraOPC() throws ExceptionCortex {
 		mainApp.programa = "COM13P";
-		String letraPaso = mainApp.programa.substring(5,6);
-		Map<String, String> datos = new HashMap<String, String>();
+		Map<String, String> datos = new HashMap<>();
 		String esperado = "OPC SEARCH NAME=GENER6P,FECHA6PO,FECHA8PO,FECHADB2,GENERLP";
 		
-		datos = metodosAux.cabecera(1, letraPaso);
+		datos = metodosAux.cabecera();
 		
 		assertEquals(esperado, datos.get("OPC0"));
 	}
@@ -94,9 +90,8 @@ public class MetodosAuxTest {
 	@Test(expected = ExceptionCortex.class)
 	public void testCabeceraNoExisteFichero() throws ExceptionCortex {
 		mainApp.programa = "AAA50A";
-		String letraPaso = mainApp.programa.substring(5,6);
 		
-		metodosAux.cabecera(1, letraPaso);
+		metodosAux.cabecera();
 		
 	}
 	
@@ -119,7 +114,7 @@ public class MetodosAuxTest {
 		esperado.add("//             RECFM=FB,LRECL=191,SPACE=(4096,(234,71),RLSE),");
 		esperado.add("//             MGMTCLAS=EXLI0300");
 		
-		ArrayList<String> salida = metodosAux.buscaInfoProc(0, "D", "EMPLE");
+		ArrayList<String> salida = (ArrayList<String>) metodosAux.buscaInfoProc(0, "D", "EMPLE");
 		
 		assertEquals(esperado, salida);
 	}
@@ -134,7 +129,7 @@ public class MetodosAuxTest {
 		esperado.add("//             SPACE=(4096,(122071,36622),RLSE,,ROUND),");
 		esperado.add("//             MGMTCLAS=EXLI0450");
 
-		ArrayList<String> salida = metodosAux.buscaInfoProc(10, "F", "SORTIDA");
+		ArrayList<String> salida = (ArrayList<String>) metodosAux.buscaInfoProc(10, "F", "SORTIDA");
 		
 		assertEquals(esperado, salida);
 	}
@@ -257,7 +252,7 @@ public class MetodosAuxTest {
 		ArrayList<String> esperado = new ArrayList<String>();
 		esperado.add("**** No encontrado fichero SORTIN");
 
-		ArrayList<String> salida = metodosAux.infoSORTIN(4, "D");
+		ArrayList<String> salida = (ArrayList<String>) metodosAux.infoSORTIN(4, "D");
 		
 		assertEquals(esperado, salida);
 		
@@ -273,7 +268,7 @@ public class MetodosAuxTest {
 		esperado.add("//SORTIN   DD  DISP=SHR,DSN=Z.AUT.EMPLE004.AUT21D.&GENEM");
 		esperado.add("//         DD  DISP=SHR,DSN=Z.AUT.EMPLE002.AUT21D.&GENEM");
 
-		ArrayList<String> salida = metodosAux.infoSORTIN(4, "D");
+		ArrayList<String> salida = (ArrayList<String>) metodosAux.infoSORTIN(4, "D");
 		
 		assertEquals(esperado, salida);
 	}
@@ -347,7 +342,7 @@ public class MetodosAuxTest {
 		esperado.add("tyttttsdasdasdasdasdasdasdasdasdasttttt@sadsada.es ");
 		
 		
-		ArrayList<String> salida = MetodosAux.ComprobarTamañoLinea("ADRDES", "DOMMADE=                                                               ",
+		ArrayList<String> salida = MetodosAux.checkLineSize("ADRDES", "DOMMADE=                                                               ",
 										"", datos);
 		
 		assertEquals(esperado, salida);
@@ -362,7 +357,7 @@ public class MetodosAuxTest {
 		esperado.add("");
 		
 		
-		ArrayList<String> salida = MetodosAux.ComprobarTamañoLinea("A", "DOMMADE=                                                               ",
+		ArrayList<String> salida = MetodosAux.checkLineSize("A", "DOMMADE=                                                               ",
 										"", datos);
 		
 		assertEquals(esperado, salida);
@@ -377,7 +372,7 @@ public class MetodosAuxTest {
 		esperado.add("");
 		
 		
-		ArrayList<String> salida = MetodosAux.ComprobarTamañoLinea("ADRDES", "DOMMADE=                                                               ",
+		ArrayList<String> salida = MetodosAux.checkLineSize("ADRDES", "DOMMADE=                                                               ",
 										"", datos);
 		
 		assertEquals(esperado, salida);
@@ -392,7 +387,7 @@ public class MetodosAuxTest {
 		esperado.add("");
 		
 		
-		ArrayList<String> salida = MetodosAux.ComprobarTamañoLinea("dato", "DOMMADE=                                                               ",
+		ArrayList<String> salida = MetodosAux.checkLineSize("dato", "DOMMADE=                                                               ",
 										"Entonces ", datos);
 		
 		assertEquals(esperado, salida);
@@ -407,7 +402,7 @@ public class MetodosAuxTest {
 		esperado.add("Cogio el paraguas ");
 		
 		
-		ArrayList<String> salida = MetodosAux.ComprobarTamañoLinea("dato", "DOMMADE=                                                               ",
+		ArrayList<String> salida = MetodosAux.checkLineSize("dato", "DOMMADE=                                                               ",
 										"Entonces ", datos);
 		
 		assertEquals(esperado, salida);
@@ -422,7 +417,7 @@ public class MetodosAuxTest {
 		esperado.add("llover.Cogio el paraguas ");
 		
 		
-		ArrayList<String> salida = MetodosAux.ComprobarTamañoLinea("A", 
+		ArrayList<String> salida = MetodosAux.checkLineSize("A", 
 									"DOMMADE=                                                               ",
 									"Entonces fue hacia su casa despues de comer y empezó a llover.Cogio el paraguas ",
 									datos);
