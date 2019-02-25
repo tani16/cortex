@@ -342,7 +342,7 @@ public class MetodosAuxTest {
 		esperado.add("tyttttsdasdasdasdasdasdasdasdasdasttttt@sadsada.es ");
 		
 		
-		ArrayList<String> salida = MetodosAux.checkLineSize("ADRDES", "DOMMADE=                                                               ",
+		ArrayList<String> salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDES", "DOMMADE=                                                               ",
 										"", datos);
 		
 		assertEquals(esperado, salida);
@@ -357,7 +357,7 @@ public class MetodosAuxTest {
 		esperado.add("");
 		
 		
-		ArrayList<String> salida = MetodosAux.checkLineSize("A", "DOMMADE=                                                               ",
+		ArrayList<String> salida = (ArrayList<String>) MetodosAux.checkLineSize("A", "DOMMADE=                                                               ",
 										"", datos);
 		
 		assertEquals(esperado, salida);
@@ -372,7 +372,7 @@ public class MetodosAuxTest {
 		esperado.add("");
 		
 		
-		ArrayList<String> salida = MetodosAux.checkLineSize("ADRDES", "DOMMADE=                                                               ",
+		ArrayList<String> salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDES", "DOMMADE=                                                               ",
 										"", datos);
 		
 		assertEquals(esperado, salida);
@@ -387,7 +387,7 @@ public class MetodosAuxTest {
 		esperado.add("");
 		
 		
-		ArrayList<String> salida = MetodosAux.checkLineSize("dato", "DOMMADE=                                                               ",
+		ArrayList<String> salida = (ArrayList<String>) MetodosAux.checkLineSize("dato", "DOMMADE=                                                               ",
 										"Entonces ", datos);
 		
 		assertEquals(esperado, salida);
@@ -402,7 +402,7 @@ public class MetodosAuxTest {
 		esperado.add("Cogio el paraguas ");
 		
 		
-		ArrayList<String> salida = MetodosAux.checkLineSize("dato", "DOMMADE=                                                               ",
+		ArrayList<String> salida = (ArrayList<String>) MetodosAux.checkLineSize("dato", "DOMMADE=                                                               ",
 										"Entonces ", datos);
 		
 		assertEquals(esperado, salida);
@@ -417,7 +417,7 @@ public class MetodosAuxTest {
 		esperado.add("llover.Cogio el paraguas ");
 		
 		
-		ArrayList<String> salida = MetodosAux.checkLineSize("A", 
+		ArrayList<String> salida = (ArrayList<String>) MetodosAux.checkLineSize("A", 
 									"DOMMADE=                                                               ",
 									"Entonces fue hacia su casa despues de comer y empezó a llover.Cogio el paraguas ",
 									datos);

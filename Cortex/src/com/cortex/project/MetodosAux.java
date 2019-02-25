@@ -92,7 +92,7 @@ public class MetodosAux {
 		    	}	    	
 		    }
 		}catch (Exception e) {
-			Avisos.LOGGER.log(Level.SEVERE, Constantes.LOG_PROC_NOT_FOUND);
+			Avisos.LOGGER.log(Level.SEVERE, "Error en la lectura del PRO - buscaInfoProc");
 			throw new ExceptionCortex(7, "buscaInfoProc", "PROC", Constantes.LECTURA);
 		}	
 	    

@@ -14,31 +14,29 @@ public class WriterPasos {
 	//static Avisos  avisos = new Avisos();
 	MetodosAux metodosAux = new MetodosAux();
 	public static int pasoS = -1;
-	public static Map<String, String[]> histPasos = new HashMap<String, String[]>();
+	public static Map<String, String[]> histPasos = new HashMap<>();
 	public static boolean masMail = false;
 	
 	
 
-	public void writeDB2(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
-		// TODO Auto-generated method stub
-		//----------------Fichero de plantilla DB2--------------------------
-	    FileReader ficheroDB2 = new FileReader("C:\\Cortex\\Plantillas\\JDB2.txt");
-	    BufferedReader lectorDB2 = new BufferedReader(ficheroDB2);	
+	public void writeDB2(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws ExceptionCortex, IOException {
 	    //----------------Variables------------------------------------------
 	    String linea;
 	    pasoS += 2;
-	    String numeroPaso = (pasoS < 10) ? "0" + String.valueOf(pasoS) : String.valueOf(pasoS) ;
-	    String numeroPasoE = (pasoE < 10) ? "0" + String.valueOf(pasoE) : String.valueOf(pasoE) ;
+	    String numeroPaso = (pasoS < 10) ? "0" + pasoS : String.valueOf(pasoS) ;
+	    String numeroPasoE = (pasoE < 10) ? "0" + pasoE : String.valueOf(pasoE) ;
 	    String[] valor = {"DB2", numeroPaso};
 	    histPasos.put(numeroPasoE, valor);
 	    int contadorLinea = 0;
 	    
+	    //----------------Fichero de plantilla DB2--------------------------
+	    FileReader ficheroDB2 = TratamientoDeFicheros.openTemplate(Constantes.JDB2_TEMPLATE);  	    
+	    BufferedReader lectorDB2 = TratamientoDeFicheros.readerTemplate(ficheroDB2);
 	    
 	    //----------------Método---------------------------------------------
-
 	    //--------------- Miramos si hay archivos para borrar antes de ejecutar:
-	    for (int i = 1; datos.containsKey("Borrar" + String.valueOf(i)); i++) {
-	    	if(!datos.get("Borrar" + String.valueOf(i)).equals("No")) {
+	    for (int i = 1; datos.containsKey(Constantes.BORRAR + i); i++) {
+	    	if(!datos.get(Constantes.BORRAR + String.valueOf(i)).equals("No")) {
 	    		writeJBORRAF(datos, numeroPaso, i, letraPaso, writerCortex, pasoE);
 	    	}
 	    }
@@ -48,45 +46,45 @@ public class WriterPasos {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
 	    	case 2:
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
 	    		linea = linea.replace("NOMPROGR,", datos.get("PGM"));
 	    		if (datos.containsKey("TIME")) {
 	    			linea = linea.trim() + ",TEXEC=" + datos.get("TIME");
 	    		}
-	    		if(datos.containsKey("PARDB2")) {
+	    		if(datos.containsKey(Constantes.PARDB2)) {
 	    			linea = linea.trim() + ",";
 	    		}
 				break;
 	    	case 3:
-	    		if(!datos.containsKey("PARDB2")) {
+	    		if(!datos.containsKey(Constantes.PARDB2)) {
 	    			continue;
 	    		}
-	    		if (metodosAux.checkLiteralesPARDB2(datos.get("PARDB2").replace("*&", "-&"))) {
-	    			writerCortex.write("****** LITERALES EN LOS PARAMETROS DEL PROGRAMA: " + datos.get("PARDB2") + "*****");
+	    		if (metodosAux.checkLiteralesPARDB2(datos.get(Constantes.PARDB2).replace("*&", "-&"))) {
+	    			writerCortex.write("****** LITERALES EN LOS PARAMETROS DEL PROGRAMA: " + datos.get(Constantes.PARDB2) + "*****");
 	    	    	writerCortex.newLine();
-	    	    	Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " // Literales en el programa: "
-	    	    			+ datos.get("PARDB2"));
+	    	    	String mensaje = letraPaso + String.valueOf(pasoE) + " // Literales en el programa: " + datos.get(Constantes.PARDB2);
+	    	    	Avisos.LOGGER.log(Level.INFO, mensaje);
 	    		}	    		
-	    		linea = linea.replace("&VAR1-&VAR2-..." , metodosAux.tratarLiteralesPARDB2(datos.get("PARDB2").replace("*&", "-&")));
-	    		
+	    		linea = linea.replace("&VAR1-&VAR2-..." , metodosAux.tratarLiteralesPARDB2(datos.get(Constantes.PARDB2).replace("*&", "-&")));
+	    		break;
 	    	default:
 				break;
 	    	}
-	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea.replaceAll("\\s*$",""));
+	    	System.out.println(Constantes.WRITING + linea);
+	    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 	    	writerCortex.newLine();
 	    }
-	    lectorDB2.close();
+
 //--------------- Miramos si hay ficheros Cortex:
-	    if (datos.containsKey("FCortex")) {
+	    if (datos.containsKey(Constantes.F_CORTEX)) {
 	    	writeFCortex(datos, writerCortex);
 	    }
 //--------------- Miramos si hay ficheros de entrada:
-	    for (int i = 1; datos.containsKey("Entrada" + String.valueOf(i)); i++) {
+	    for (int i = 1; datos.containsKey(Constantes.ENTRADA + String.valueOf(i)); i++) {
 	    	writeJFICHENT(datos, numeroPaso, i, letraPaso, writerCortex, pasoE);
 	    }
 //--------------- Miramos si hay ficheros de Salida:
-	    for (int i = 1; datos.containsKey("Salida" + String.valueOf(i)); i++) {
+	    for (int i = 1; datos.containsKey(Constantes.SALIDA + String.valueOf(i)); i++) {
 	    	writeJFICHSAL(datos, numeroPaso, i, letraPaso, writerCortex, pasoE);
 	    }
 //--------------- Miramos si hay reportes para informar:
@@ -101,73 +99,71 @@ public class WriterPasos {
 	}
 
 	private void writeCondicionales(Map<String, String> datos, BufferedWriter writerCortex) throws IOException {
-		// TODO Auto-generated method stub
 		for (int i = 1; datos.containsKey("COND" + i); i++) {
-			Avisos.LOGGER.log(Level.INFO, mainApp.letraPaso + String.valueOf(mainApp.pasoE) + " // Condicional " + i + ": " + datos.get("COND" + i) );
-			System.out.println("Escribimos: " + "*** CONDICIONAL " + i + ": " + datos.get("COND" + i));
+			String mensaje = mainApp.letraPaso + String.valueOf(mainApp.pasoE) + " // Condicional " + i + ": " + datos.get("COND" + i);
+			Avisos.LOGGER.log(Level.INFO, mensaje);
+			System.out.println(Constantes.WRITING + "*** CONDICIONAL " + i + ": " + datos.get("COND" + i));
 	    	writerCortex.write("*** CONDICIONAL " + i + ": " + datos.get("COND" + i));
 	    	writerCortex.newLine();
 		}
 	}
 
 	private void writeFCortex(Map<String, String> datos, BufferedWriter writerCortex) throws IOException {
-		// TODO Auto-generated method stub
-		System.out.println("Escribimos: " + "//*--FICHERO CORTEX----------------------------------------------------");
+		System.out.println(Constantes.WRITING + "//*--FICHERO CORTEX----------------------------------------------------");
     	writerCortex.write("//*--FICHERO CORTEX----------------------------------------------------");
     	writerCortex.newLine();
-		StringBuffer fCortex = new StringBuffer("//" + datos.get("FCortex"));
+		StringBuilder fCortex = new StringBuilder("//" + datos.get(Constantes.F_CORTEX));
 		for(int j = fCortex.length(); j < 11; j++) {
 			fCortex.append(" ");
 		}
-		System.out.println("Escribimos: " + fCortex + "DD *");
+		System.out.println(Constantes.WRITING + fCortex + "DD *");
     	writerCortex.write(fCortex + "DD *");
     	writerCortex.newLine();
 		for (int i = 1; datos.containsKey("FC" + i); i++) {
-			System.out.println("Escribimos: " + datos.get("FC" + i));
+			System.out.println(Constantes.WRITING + datos.get("FC" + i));
 	    	writerCortex.write(datos.get("FC" + i));
 	    	writerCortex.newLine();
 		}
 	}
 
 	public void writeIF(Map<String, String> datos, BufferedWriter writerCortex) throws IOException {
-		// TODO Auto-generated method stub
-		if (datos.containsKey("ENDIF")) {
-			System.out.println("Escribimos: " + datos.get("ENDIF"));
-	    	writerCortex.write(datos.get("ENDIF"));
+		if (datos.containsKey(Constantes.ENDIF)) {
+			System.out.println(Constantes.WRITING + datos.get(Constantes.ENDIF));
+	    	writerCortex.write(datos.get(Constantes.ENDIF));
 	    	writerCortex.newLine();
 		}
 		if (datos.containsKey("IF")) {
 			String valorIF = datos.get("IF");
 			int index1 = valorIF.indexOf("IF " + mainApp.letraPaso);
-			int index2 = valorIF.indexOf(".", index1);
+			int index2 = valorIF.indexOf('.', index1);
 			String pasoCortex = valorIF.substring(index1 + 4, index2);
 			String[] infoPaso = WriterPasos.histPasos.get(pasoCortex.substring(0,2));
 			if(!infoPaso[0].equals("IF referido a paso no migrado")) {
 				valorIF = valorIF.replace(" " + mainApp.letraPaso + pasoCortex + ".", " " + mainApp.letraPaso + infoPaso[1] + "." + infoPaso[0] + ".");
 			}else {
 				valorIF = valorIF.replace("//", "/*");
-    			Avisos.LOGGER.log(Level.INFO, mainApp.letraPaso + String.valueOf(mainApp.pasoE) + " // IF referido a paso no migrado: ");
-				System.out.println("Escribimos: " + "***** IF REFERIDO A PASO NO MIGRADO *****");
+				String mensaje = mainApp.letraPaso + String.valueOf(mainApp.pasoE) + " // IF referido a paso no migrado: ";
+    			Avisos.LOGGER.log(Level.INFO, mensaje);
+				System.out.println(Constantes.WRITING + "***** IF REFERIDO A PASO NO MIGRADO *****");
 		    	writerCortex.write("***** IF REFERIDO A PASO NO MIGRADO *****");
 		    	writerCortex.newLine();
 			}
 
-			System.out.println("Escribimos: " + valorIF);
+			System.out.println(Constantes.WRITING + valorIF);
 	    	writerCortex.write(valorIF);
 	    	writerCortex.newLine();
 		}
 		if (datos.containsKey("ELSE")) {
-			System.out.println("Escribimos: " + datos.get("ELSE"));
+			System.out.println(Constantes.WRITING + datos.get("ELSE"));
 	    	writerCortex.write(datos.get("ELSE"));
 	    	writerCortex.newLine();
 		}
 	}
 
 	private void writeReports(Map<String, String> datos, BufferedWriter writerCortex, int pasoE, String letraPaso) throws IOException, ExceptionCortex {
-		// TODO Auto-generated method stub
-		Map<String, String> infoRep = new HashMap<String, String>();
-		for (int i = 1; datos.containsKey("Reporte" + String.valueOf(i)); i++) {
-			infoRep = metodosAux.infoReportes(datos.get("Reporte" + String.valueOf(i)), pasoE, letraPaso);
+		Map<String, String> infoRep;
+		for (int i = 1; datos.containsKey("Reporte" + i); i++) {
+			infoRep = metodosAux.infoReportes(datos.get("Reporte" + i), pasoE, letraPaso);
 			writerCortex.write("//*--REPORT-----------------------------------------------------------");
 	    	writerCortex.newLine();
 			writerCortex.write(infoRep.get("ReportKey"));
@@ -177,17 +173,16 @@ public class WriterPasos {
 	}
 
 	public void writeComments(Map<String, String> datos, BufferedWriter writerCortex) throws IOException {
-		for (int i = 1; datos.containsKey("Comentario" + String.valueOf(i)); i++) {
-			System.out.println("Escribimos: " + "//" + datos.get("Comentario" + String.valueOf(i)));
-	    	writerCortex.write("//" + datos.get("Comentario" + String.valueOf(i)));
+		for (int i = 1; datos.containsKey(Constantes.COMENTARIO + i); i++) {
+			System.out.println(Constantes.WRITING + "//" + datos.get(Constantes.COMENTARIO + i));
+	    	writerCortex.write("//" + datos.get(Constantes.COMENTARIO + i));
 	    	writerCortex.newLine();
 	    }
 	}
 
 	private void writeComments(Map<String, String> datos, BufferedWriter writerCortex, String tipo, int numFich) throws IOException {
-		// TODO Auto-generated method stub
 		for (int i = 1; datos.containsKey(tipo + String.valueOf(numFich) + String.valueOf(i)); i++) {
-			System.out.println("Escribimos: " + "//" + datos.get(tipo + String.valueOf(numFich) + String.valueOf(i)));
+			System.out.println(Constantes.WRITING + "//" + datos.get(tipo + String.valueOf(numFich) + String.valueOf(i)));
 	    	writerCortex.write("//" + datos.get(tipo + String.valueOf(numFich) + String.valueOf(i)));
 	    	writerCortex.newLine();
 	    }
@@ -195,94 +190,92 @@ public class WriterPasos {
 	
 	public void writeJFICHSAL(Map<String, String> datos, String numeroPaso, int i, String letraPaso,
 			BufferedWriter writerCortex, int pasoE) throws IOException, ExceptionCortex {
-		// TODO Auto-generated method stub
-		//----------------Fichero de plantilla JFICHENT--------------------------
-	    FileReader ficheroJFICHSAL = new FileReader("C:\\Cortex\\Plantillas\\JFICHSAL.txt");
-	    BufferedReader lectorJFICHSAL = new BufferedReader(ficheroJFICHSAL);	
-	    //----------------Variables------------------------------------------
-	    Map<String, String> infoFich = new HashMap<String, String>();
-	    String linea, nombre;
+	  //----------------Variables------------------------------------------
+	    Map<String, String> infoFich;
+	    String linea; 
+	    String nombre;
 	    int contadorLinea = 0;
-	    
-	    //----------------Método---------------------------------------------
-	    
-	    writeComments(datos, writerCortex, "ComFichS", i);
-	    
-	    nombre = datos.get("Salida" + String.valueOf(i));
+	  //----------------Fichero de plantilla JFICHENT--------------------------
+	    FileReader ficheroJFICHSAL = TratamientoDeFicheros.openTemplate(Constantes.JFICHSAL_TEMPLATE);
+	    BufferedReader lectorJFICHSAL = TratamientoDeFicheros.readerTemplate(ficheroJFICHSAL);	
+	  //----------------Método---------------------------------------------     
+    	writeComments(datos, writerCortex, "ComFichS", i);
+    
+	    nombre = datos.get(Constantes.SALIDA + String.valueOf(i));
 	    infoFich = metodosAux.infoFichero(pasoE, letraPaso, nombre);
 	    for(int j = nombre.length(); j < 8; j++) {
 			nombre += " ";
 		}
-	    if (!infoFich.containsKey("DUMMY")) {
+	    if (!infoFich.containsKey(Constantes.DUMMY)) {
 		    while((linea = lectorJFICHSAL.readLine()) != null) {
 		    	contadorLinea ++;
 		    	switch (contadorLinea) {
 		    	case 3:
-		    		linea = linea.replace("DDNAME--", nombre);
-		    		if(infoFich.get("DSN").contains("CORTEX.")) {
-		    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-		    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+		    		linea = linea.replace(Constantes.DDNAME, nombre);
+		    		if(infoFich.get("DSN").contains(Constantes.CORTEX)) {
+		    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+		    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 		    	    	writerCortex.newLine();
 		    		}
-		    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", infoFich.get("DSN"));
+		    		linea = linea.replace(Constantes.DEFINICION_FICHERO, infoFich.get("DSN"));
 		    		break;
 		    	case 5:
-		    		if(infoFich.containsKey("MGMTCLAS")) {
-		    			linea = linea.replace("EXLIXXXX", infoFich.get("MGMTCLAS"));
+		    		if(infoFich.containsKey(Constantes.MGMTCLAS)) {
+		    			linea = linea.replace(Constantes.EXLIXXXX, infoFich.get(Constantes.MGMTCLAS));
 		    		}else {
 		    			linea = linea.replace("// ", "//*");
 		    		}
 		    		break;
 		    	case 6:
-		    		if (infoFich.get("DISP").equals("NEW") && infoFich.get("LRECL").equals("LRECL")) {
-		    			System.out.println("******* LRECL NO INFORMADO EN PROC - IR AL PROGRAMA*********");
-		    			writerCortex.write("******* LRECL NO INFORMADO EN PROC - IR AL PROGRAMA*********");
+		    		if (infoFich.get("DISP").equals("NEW") && infoFich.get(Constantes.LRECL).equals(Constantes.LRECL)) {
+		    			System.out.println(Constantes.LOG_LRECL_NOT_FOUND);
+		    			writerCortex.write(Constantes.LOG_LRECL_NOT_FOUND);
 						writerCortex.newLine();
 		    		}else {
-			    		linea = linea.replace("(LONGREG,(KKK,KK))", infoFich.get("Definicion"));
+			    		linea = linea.replace(Constantes.TAMANIO_FICHERO, infoFich.get(Constantes.DEFINICION));
 		    		}
 		    		break;
 		    	case 9:
-		    		linea = linea.replace("DDNAME--", nombre);
-		    		if(infoFich.get("DSN").contains("CORTEX.")) {
-		    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-		    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+		    		linea = linea.replace(Constantes.DDNAME, nombre);
+		    		if(infoFich.get("DSN").contains(Constantes.CORTEX)) {
+		    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+		    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 		    	    	writerCortex.newLine();
 		    		}
 		    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.XP", infoFich.get("DSN"));
 		    		break;
 		    	case 11:
-		    		if (infoFich.get("DISP").equals("TEMP") && infoFich.get("LRECL").equals("LRECL")) {
-		    			System.out.println("******* LRECL NO INFORMADO EN PROC - IR AL PROGRAMA*********");
-		    			writerCortex.write("******* LRECL NO INFORMADO EN PROC - IR AL PROGRAMA*********");
+		    		if (infoFich.get("DISP").equals("TEMP") && infoFich.get(Constantes.LRECL).equals(Constantes.LRECL)) {
+		    			System.out.println(Constantes.LOG_LRECL_NOT_FOUND);
+		    			writerCortex.write(Constantes.LOG_LRECL_NOT_FOUND);
 						writerCortex.newLine();
 		    		}else {
-			    		linea = linea.replace("(LONGREG,(KKK,KK))", infoFich.get("Definicion"));
+			    		linea = linea.replace(Constantes.TAMANIO_FICHERO, infoFich.get(Constantes.DEFINICION));
 		    		}
 		    		break;
 		    	case 14:
-		    		linea = linea.replace("DDNAME--", nombre);
-		    		if(infoFich.get("DSN").contains("CORTEX.")) {
-		    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-		    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+		    		linea = linea.replace(Constantes.DDNAME, nombre);
+		    		if(infoFich.get("DSN").contains(Constantes.CORTEX)) {
+		    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+		    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 		    	    	writerCortex.newLine();
 		    		}
-		    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", infoFich.get("DSN"));
+		    		linea = linea.replace(Constantes.DEFINICION_FICHERO, infoFich.get("DSN"));
 		    		break;
 		    	case 16:
-		    		if(infoFich.containsKey("MGMTCLAS")) {
-		    			linea = linea.replace("EXLIXXXX", infoFich.get("MGMTCLAS"));
+		    		if(infoFich.containsKey(Constantes.MGMTCLAS)) {
+		    			linea = linea.replace(Constantes.EXLIXXXX, infoFich.get(Constantes.MGMTCLAS));
 		    		}else {
 		    			linea = linea.replace("// ", "//*");
 		    		}
 		    		break;
 		    	case 17:
-		    		if (infoFich.get("DISP").equals("MOD") && infoFich.get("LRECL").equals("LRECL")) {
-		    			System.out.println("******* LRECL NO INFORMADO EN PROC - IR AL PROGRAMA*********");
-		    			writerCortex.write("******* LRECL NO INFORMADO EN PROC - IR AL PROGRAMA*********");
+		    		if (infoFich.get("DISP").equals("MOD") && infoFich.get(Constantes.LRECL).equals(Constantes.LRECL)) {
+		    			System.out.println(Constantes.LOG_LRECL_NOT_FOUND);
+		    			writerCortex.write(Constantes.LOG_LRECL_NOT_FOUND);
 						writerCortex.newLine();
 		    		}else {
-			    		linea = linea.replace("(LONGREG,(KKK,KK))", infoFich.get("Definicion"));
+			    		linea = linea.replace(Constantes.TAMANIO_FICHERO, infoFich.get(Constantes.DEFINICION));
 		    		}
 		    		break;
 		    	default:
@@ -303,41 +296,39 @@ public class WriterPasos {
 		    	}   
 	    		    	
 		    	if (!linea.equals("")) {
-			    	System.out.println("Escribimos: " + linea);
-			    	writerCortex.write(linea.replaceAll("\\s*$",""));
+			    	System.out.println(Constantes.WRITING + linea);
+			    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 			    	writerCortex.newLine();
 		    	}
 		    }
 	    }else {
 	    	writerCortex.write("//*--DUMMY-----------------------------------------------------------");
 	    	writerCortex.newLine();
-			writerCortex.write(infoFich.get("DUMMY"));
+			writerCortex.write(infoFich.get(Constantes.DUMMY));
 	    	writerCortex.newLine();	
 	    }
 	    infoFich.clear();
-	    lectorJFICHSAL.close();	 
-	}
+    }
 
-	public void writeJFICHENT(Map<String, String> datos, String numeroPaso, int i, String letraPaso, BufferedWriter writerCortex, int pasoE) throws IOException, ExceptionCortex {
-		// TODO Auto-generated method stub
-		//----------------Fichero de plantilla JFICHENT--------------------------
-	    FileReader ficheroJFICHENT = new FileReader("C:\\Cortex\\Plantillas\\JFICHENT.txt");
-	    BufferedReader lectorJFICHENT = new BufferedReader(ficheroJFICHENT);	
+	public void writeJFICHENT(Map<String, String> datos, String numeroPaso, int i, String letraPaso, BufferedWriter writerCortex, int pasoE) throws IOException, ExceptionCortex {		
 	    //----------------Variables------------------------------------------
-	    String linea, nombre;
+	    String linea;
+	    String nombre;
 	    int contadorLinea = 0;
 	    
+	    //----------------Fichero de plantilla JFICHENT--------------------------
+	    FileReader ficheroJFICHENT = TratamientoDeFicheros.openTemplate(Constantes.JFICHENT_TEMPLATE);
+	    BufferedReader lectorJFICHENT = TratamientoDeFicheros.readerTemplate(ficheroJFICHENT);
 	    //----------------Método---------------------------------------------
-	    
 	    writeComments(datos, writerCortex, "ComFichE", i);
 
-	    Map<String, String> infoFich = new HashMap<String, String>();
-	    nombre = datos.get("Entrada" + String.valueOf(i));
+	    Map<String, String> infoFich;
+	    nombre = datos.get(Constantes.ENTRADA + i);
 		for(int j = nombre.length(); j < 8; j++) {
 			nombre += " ";
 		}
 	    infoFich = metodosAux.infoFichero(pasoE, letraPaso, nombre);
-	    if (!infoFich.containsKey("DUMMY")) {
+	    if (!infoFich.containsKey(Constantes.DUMMY)) {
 		    while((linea = lectorJFICHENT.readLine()) != null) {
 		    	contadorLinea ++;
 		    	if(i > 1 && contadorLinea == 1) {
@@ -346,14 +337,14 @@ public class WriterPasos {
 		    	}
 		    	switch (contadorLinea) {
 		    	case 2:
-		    		linea = linea.replace("DDNAME--", nombre);
-		    		if(infoFich.get("DSN").contains("CORTEX.")) {
-		    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-		    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+		    		linea = linea.replace(Constantes.DDNAME, nombre);
+		    		if(infoFich.get("DSN").contains(Constantes.CORTEX)) {
+		    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+		    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 		    	    	writerCortex.newLine();
 		    		}
-		    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", "Z." + infoFich.get("DSN"));
-			    	writerCortex.write(linea.replaceAll("\\s*$",""));
+		    		linea = linea.replace(Constantes.DEFINICION_FICHERO, "Z." + infoFich.get("DSN"));
+			    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 			    	writerCortex.newLine();
 			    	linea = "";
 			    	if(infoFich.containsKey("DSN1")) {
@@ -371,35 +362,34 @@ public class WriterPasos {
 					break;
 		    	}
 		    	if (!linea.equals("")) {
-			    	System.out.println("Escribimos: " + linea);
-			    	writerCortex.write(linea.replaceAll("\\s*$",""));
+			    	System.out.println(Constantes.WRITING + linea);
+			    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 			    	writerCortex.newLine();
 		    	} 
 		    }
 	    }else {
 	    	writerCortex.write("//*--DUMMY-----------------------------------------------------------");
 	    	writerCortex.newLine();
-			writerCortex.write(infoFich.get("DUMMY"));
+			writerCortex.write(infoFich.get(Constantes.DUMMY));
 	    	writerCortex.newLine();	
 	    }
-	    lectorJFICHENT.close();	 
-	}
+    }	 
 
 	public void writeJBORRAF(Map<String, String> datos, String numeroPaso, int i, String letraPaso, BufferedWriter writerCortex, int pasoE) throws IOException, ExceptionCortex {
-		// TODO Auto-generated method stub
-		//----------------Fichero de plantilla JBORRAF--------------------------
-	    FileReader ficheroJBORRAF = new FileReader("C:\\Cortex\\Plantillas\\JBORRAF.txt");
-	    BufferedReader lectorJBORRAF = new BufferedReader(ficheroJBORRAF);	
-	    //----------------Variables------------------------------------------
-	    String linea, nombre;
+		//----------------Variables------------------------------------------
+	    String linea;
+	    String nombre;
 	    int contadorLinea = 0;
 	    
+	    //----------------Fichero de plantilla JBORRAF--------------------------
+	    FileReader ficheroJBORRAF = TratamientoDeFicheros.openTemplate(Constantes.JBORRAF_TEMPLATE);
+	    BufferedReader lectorJBORRAF = TratamientoDeFicheros.readerTemplate(ficheroJBORRAF);	
 	    //----------------Método---------------------------------------------
-	    Map<String, String> infoFich = new HashMap<String, String>();
-	    nombre = datos.get("Borrar" + String.valueOf(i));
+	    Map<String, String> infoFich;
+	    nombre = datos.get(Constantes.BORRAR + String.valueOf(i));
 	    infoFich = metodosAux.infoFichero(pasoE, letraPaso, nombre);
 	    
-	    if (!infoFich.containsKey("DUMMY")) {
+	    if (!infoFich.containsKey(Constantes.DUMMY)) {
 		    while((linea = lectorJBORRAF.readLine()) != null) {
 		    	contadorLinea ++;
 		    	if(i > 1 && contadorLinea == 1) {
@@ -409,101 +399,100 @@ public class WriterPasos {
 		    	switch (contadorLinea) {
 		    	case 2:
 		    		if(i < 10) {
-		    			linea = linea.replace("//---D-", "//" + letraPaso + numeroPaso + "D" + String.valueOf(i));
+		    			linea = linea.replace(Constantes.DELETE_STEP_START, "//" + letraPaso + numeroPaso + "D" + i);
 		    		}else {
-		    			linea = linea.replace("//---D- ", "//" + letraPaso + numeroPaso + "D" + String.valueOf(i));
+		    			linea = linea.replace("//---D- ", "//" + letraPaso + numeroPaso + "D" + i);
 		    		}
-		    		if(infoFich.get("DSN").contains("CORTEX.")) {
-		    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-		    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+		    		if(infoFich.get("DSN").contains(Constantes.CORTEX)) {
+		    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+		    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 		    	    	writerCortex.newLine();
 		    		}
-		    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", infoFich.get("DSN"));
+		    		linea = linea.replace(Constantes.DEFINICION_FICHERO, infoFich.get("DSN"));
 		    		break;
 		    	default:
 					break;
 		    	}
-		    	System.out.println("Escribimos: " + linea);
-		    	writerCortex.write(linea.replaceAll("\\s*$",""));
+		    	System.out.println(Constantes.WRITING + linea);
+		    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 		    	writerCortex.newLine();
 		    }
-		    lectorJBORRAF.close();	 
-	    }
-	}
+	    } 
+    }
 
 	public void writeMAILTXT(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
-		// TODO Auto-generated method stub
-		//----------------Fichero de plantilla JJMAILTXT--------------------------
-	    FileReader ficheroMAILTXT = new FileReader("C:\\Cortex\\Plantillas\\JMAILTXT.txt");
-	    BufferedReader lectorMAILTXT = new BufferedReader(ficheroMAILTXT);	
 	    //----------------Variables------------------------------------------
-	    String linea, fi = "";
+	    String linea;
+	    String fi = Constantes.EMPTY;
 	    pasoS += 2;
-	    String numeroPaso = (pasoS < 10) ? "0" + String.valueOf(pasoS) : String.valueOf(pasoS) ;
-	    String numeroPasoE = (pasoE < 10) ? "0" + String.valueOf(pasoE) : String.valueOf(pasoE) ;
+	    String numeroPaso = (pasoS < 10) ? "0" + pasoS : String.valueOf(pasoS) ;
+	    String numeroPasoE = (pasoE < 10) ? "0" + pasoE : String.valueOf(pasoE) ;
 	    String[] valor = {"MAIL00", numeroPaso};
 	    histPasos.put(numeroPasoE, valor);
 	    int contadorLinea = 0;
-	    ArrayList<String> salida = new ArrayList<String>();
+	    ArrayList<String> salida;
 	    
+	    //----------------Fichero de plantilla JJMAILTXT--------------------------
+	    FileReader ficheroMAILTXT = TratamientoDeFicheros.openTemplate(Constantes.JMAILTXT_TEMPLATE);
+	    BufferedReader lectorMAILTXT = TratamientoDeFicheros.readerTemplate(ficheroMAILTXT);	
 	    
 	    //----------------Método---------------------------------------------
 	    while((linea = lectorMAILTXT.readLine()) != null) {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
 	    	case 2:
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
 				break;
 	    	case 4:
-	    		linea = (datos.get("ASUNTO") == null) ? linea.trim() : linea.trim() + datos.get("ASUNTO");
+	    		linea = (datos.get(Constantes.ASUNTO) == null) ? linea.trim() : linea.trim() + datos.get(Constantes.ASUNTO);
 	    		break;
 	    	case 5:
-	    		linea = (datos.get("ADREMI") == null) ? linea.trim() : linea.trim() + datos.get("ADREMI");
+	    		linea = (datos.get(Constantes.ADREMI) == null) ? linea.trim() : linea.trim() + datos.get(Constantes.ADREMI);
 	    		break;
 	    	case 6:
-	    		if (datos.get("ADRDES") == null && fi == "") {
+	    		if (datos.get(Constantes.ADRDES) == null && fi == "") {
 					linea = linea.trim();
 				}
 				else {
-					salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDES", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize(Constantes.ADRDES, linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
     			break;
 	    	case 7:
-	    		if (datos.get("ADRDE1") == null && fi == "") {
+	    		if (datos.get(Constantes.ADRDE1) == null && fi == "") {
 					linea = linea.trim();
 				}
 				else {
-					salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDE1", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize(Constantes.ADRDE1, linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
     			break;
 	    	case 8:
-	    		if (datos.get("ADRDE2") == null && fi == "") {
+	    		if (datos.get(Constantes.ADRDE2) == null && fi == "") {
 					linea = linea.trim();
 				}
 				else {
-					salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDE2", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize(Constantes.ADRDE2, linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
     			break;
 	    	case 9:
-	    		if (datos.get("ADRDE3") == null && fi == "") {
+	    		if (datos.get(Constantes.ADRDE3) == null && fi == "") {
 					linea = linea.trim();
 					masMail = false;
 				}
 				else {
-					salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDE3", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize(Constantes.ADRDE3, linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 					if (!fi.isEmpty()) {
 						masMail = true;
-						datos.put("ADRDES", fi);
-						datos.put("ADRDE1", "");
-						datos.put("ADRDE2", "");
+						datos.put(Constantes.ADRDES, fi);
+						datos.put(Constantes.ADRDE1, "");
+						datos.put(Constantes.ADRDE2, "");
 //		    			Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " // No caben todos los correos - Falta añadir: " + fi);
 //		    			System.out.println("Escribimos: " + "***** No caben todos los correos. Revisar  ****");
 //		    	    	writerCortex.write("***** No caben todos los correos. Revisar  ****");
@@ -581,8 +570,8 @@ public class WriterPasos {
 			default:
 				break;
 			}
-	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea.replaceAll("\\s*$",""));
+	    	System.out.println(Constantes.WRITING + linea);
+	    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 	    	writerCortex.newLine();
 	    }
 	    lectorMAILTXT.close();
@@ -617,45 +606,45 @@ public class WriterPasos {
 	    	case 2:
 	    		linea = linea.replace("//---D1", "//" + letraPaso + numeroPaso + "D" + String.valueOf(i));
 	    		i++;
-	    		if(infoSortOut.get("DSN").contains("CORTEX.")) {
-	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    		if(infoSortOut.get("DSN").contains(Constantes.CORTEX)) {
+	    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+	    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 	    	    	writerCortex.newLine();
 	    		}
-	    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", infoSortOut.get("DSN"));
+	    		linea = linea.replace(Constantes.DEFINICION_FICHERO, infoSortOut.get("DSN"));
 				break;
 	    	case 4:
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
 	    		break;
 	    	case 5:
 	    		ArrayList<String> sortIn = new ArrayList<String>();
 	    		sortIn =  (ArrayList<String>) metodosAux.infoSORTIN(pasoE, letraPaso);
 	    		for (int j = 0; j < sortIn.size(); j++) {
-	    			System.out.println("Escribimos: " + sortIn.get(j));
+	    			System.out.println(Constantes.WRITING + sortIn.get(j));
 		    		writerCortex.write(sortIn.get(j));
 		    		writerCortex.newLine();
 	    		}
 	    		linea = "";
 	    		break;
 	    	case 6:
-	    		if(infoSortOut.get("DSN").contains("CORTEX.")) {
-	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    		if(infoSortOut.get("DSN").contains(Constantes.CORTEX)) {
+	    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+	    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 	    	    	writerCortex.newLine();
 	    		}
-	    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", infoSortOut.get("DSN"));
+	    		linea = linea.replace(Constantes.DEFINICION_FICHERO, infoSortOut.get("DSN"));
 	    		break;
 	    	case 8:
-	    		if(infoSortOut.containsKey("MGMTCLAS")) {
+	    		if(infoSortOut.containsKey(Constantes.MGMTCLAS)) {
 	    			linea = linea.replace("//*", "// ");
-	    			linea = linea.replace("EXLIXXXX", infoSortOut.get("MGMTCLAS"));
+	    			linea = linea.replace(Constantes.EXLIXXXX, infoSortOut.get(Constantes.MGMTCLAS));
 	    		}
 	    		break;
 	    	case 9:
-	    		linea = linea.replace("XXX", infoSortOut.get("LRECL"));
+	    		linea = linea.replace("XXX", infoSortOut.get(Constantes.LRECL));
 	    		break;
 	    	case 10:
-	    		linea = linea.replace("(LONGREG,(KKK,KK))", infoSortOut.get("Definicion"));
+	    		linea = linea.replace(Constantes.TAMANIO_FICHERO, infoSortOut.get(Constantes.DEFINICION));
 	    		break;
 	    	case 12:
 	    		for (int j = 1; datos.containsKey("SORT" + j); j++) {
@@ -664,7 +653,7 @@ public class WriterPasos {
 	    			}else {
 	    				linea = "   " + datos.get("SORT" + j); 
 	    			}
-	    			System.out.println("Escribimos: " + linea);
+	    			System.out.println(Constantes.WRITING + linea);
 	    	    	writerCortex.write(linea);
 	    	    	writerCortex.newLine();
 	    	    	linea = "";
@@ -675,8 +664,8 @@ public class WriterPasos {
 				break;
 			}
 	    	if (!linea.equals("")) {
-	    		System.out.println("Escribimos: " + linea);
-	    		writerCortex.write(linea.replaceAll("\\s*$",""));
+	    		System.out.println(Constantes.WRITING + linea);
+	    		writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 	    		writerCortex.newLine();
 	    	}
 	    }
@@ -706,7 +695,7 @@ public class WriterPasos {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
 	    	case 2:
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
 				break;
 	    	case 3:
 	    		//Calculamos cuantos espacios hay que añadir detrás para que no se muevan los comentarios de posición
@@ -725,9 +714,9 @@ public class WriterPasos {
 	    	    	writerCortex.write("***** REVISAR FICHERO - DSN NO ENCONTRADA *****");
 	    	    	writerCortex.newLine();
 	    		}
-	    		if(dsn.contains("CORTEX.")) {
-	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    		if(dsn.contains(Constantes.CORTEX)) {
+	    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+	    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 	    	    	writerCortex.newLine();
 	    		}
 	    	    StringBuffer host = new StringBuffer("HOST=Z." + dsn + ",");
@@ -812,8 +801,8 @@ public class WriterPasos {
 			default:
 				break;
 			}
-	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea.replaceAll("\\s*$",""));
+	    	System.out.println(Constantes.WRITING + linea);
+	    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJFTPSEND.close();		
@@ -845,16 +834,16 @@ public class WriterPasos {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
 	    	case 2:
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
-	    		if(infoFtpReb.get("DSN").contains("CORTEX.")) {
-	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
+	    		if(infoFtpReb.get("DSN").contains(Constantes.CORTEX)) {
+	    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+	    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 	    	    	writerCortex.newLine();
 	    		}
-	    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", infoFtpReb.get("DSN"));
+	    		linea = linea.replace(Constantes.DEFINICION_FICHERO, infoFtpReb.get("DSN"));
 				break;
 	    	case 3:
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
 	    		break;
 	    	case 4:
 	    		//Calculamos cuantos espacios hay que añadir detrás para que no se muevan los comentarios de posición
@@ -907,28 +896,28 @@ public class WriterPasos {
 	    		}
 	    		break;
 	    	case 7:
-	    		if(infoFtpReb.get("DSN").contains("CORTEX.")) {
-	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    		if(infoFtpReb.get("DSN").contains(Constantes.CORTEX)) {
+	    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+	    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 	    	    	writerCortex.newLine();
 	    		}
-	    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", infoFtpReb.get("DSN"));
+	    		linea = linea.replace(Constantes.DEFINICION_FICHERO, infoFtpReb.get("DSN"));
 	    		break;
 	    	case 9:
-	    		if(infoFtpReb.containsKey("MGMTCLAS")) {
+	    		if(infoFtpReb.containsKey(Constantes.MGMTCLAS)) {
 	    			linea = linea.replace("//*", "// ");
-	    			linea = linea.replace("EXLIXXXX", infoFtpReb.get("MGMTCLAS"));
+	    			linea = linea.replace(Constantes.EXLIXXXX, infoFtpReb.get(Constantes.MGMTCLAS));
 	    		}
 	    		break;
 	    	case 10:
-	    		linea = linea.replace("(LONGREG,(KKK,KK))", infoFtpReb.get("Definicion"));
+	    		linea = linea.replace(Constantes.TAMANIO_FICHERO, infoFtpReb.get(Constantes.DEFINICION));
 	    	case 11:
-	    		linea = linea.replace("LONGREG", infoFtpReb.get("LRECL"));
+	    		linea = linea.replace("LONGREG", infoFtpReb.get(Constantes.LRECL));
 			default:
 				break;
 			}
-	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea.replaceAll("\\s*$",""));
+	    	System.out.println(Constantes.WRITING + linea);
+	    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJFTPREB.close();
@@ -957,7 +946,7 @@ public class WriterPasos {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
 	    	case 2:
-    			linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+    			linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
     			break;
 	    	case 3:	
 	    		StringBuffer orig = new StringBuffer("ORIG=" + datos.get("ORIG") + ",");
@@ -1011,8 +1000,8 @@ public class WriterPasos {
 			default:
 				break;
 			}
-	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea.replaceAll("\\s*$",""));
+	    	System.out.println(Constantes.WRITING + linea);
+	    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJFTPDEL.close();
@@ -1041,7 +1030,7 @@ public class WriterPasos {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
 	    	case 2:
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
 				break;
 	    	case 3:
 	    		//Calculamos cuantos espacios hay que añadir detrás para que no se muevan los comentarios de posición
@@ -1050,9 +1039,9 @@ public class WriterPasos {
 	    		for (int j = 0; j < spaces; j++) {
 	    			dsnName.append(" ");
 	    		}
-	    		if(dsnName.indexOf("CORTEX.") != -1) {
-	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    		if(dsnName.indexOf(Constantes.CORTEX) != -1) {
+	    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+	    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 	    	    	writerCortex.newLine();
 	    		}
 	    		linea = linea.replace("DSNAME=,                                  ", dsnName);
@@ -1082,8 +1071,8 @@ public class WriterPasos {
 			default:
 				break;
 			}
-	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea.replaceAll("\\s*$",""));
+	    	System.out.println(Constantes.WRITING + linea);
+	    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJMAILMSG.close();	
@@ -1111,7 +1100,7 @@ public class WriterPasos {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
 	    	case 2:
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
 				break;
 	    	case 3:
 	    		//Calculamos cuantos espacios hay que añadir detrás para que no se muevan los comentarios de posición
@@ -1200,8 +1189,8 @@ public class WriterPasos {
 	    	default:
 				break;	
 	    	}
-		    System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea.replaceAll("\\s*$",""));
+		    System.out.println(Constantes.WRITING + linea);
+	    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJFTPSAPP.close();
@@ -1233,13 +1222,13 @@ public class WriterPasos {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
 	    	case 2:
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
 				break;
 	    	case 3:
 	    		StringBuffer dsname = new StringBuffer("DSNAME=Z." + metodosAux.infoDSN(pasoE, letraPaso, "ENTRA1") + ", ");
-	    		if(dsname.indexOf("CORTEX.") != -1) {
-	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    		if(dsname.indexOf(Constantes.CORTEX) != -1) {
+	    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+	    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 	    	    	writerCortex.newLine();
 	    		}
 	    		linea = linea.replace("DSNAME=,               ", dsname);
@@ -1266,55 +1255,55 @@ public class WriterPasos {
 				}
 	    		break;
 	    	case 6:
-	    		linea = (datos.get("ASUNTO") == null) ? linea.trim() : linea.trim() + datos.get("ASUNTO");
+	    		linea = (datos.get(Constantes.ASUNTO) == null) ? linea.trim() : linea.trim() + datos.get(Constantes.ASUNTO);
 	    		break;
 	    	case 7:
-	    		linea = (datos.get("ADREMI") == null) ? linea.trim() : linea.trim() + datos.get("ADREMI");
+	    		linea = (datos.get(Constantes.ADREMI) == null) ? linea.trim() : linea.trim() + datos.get(Constantes.ADREMI);
 	    		break;
 	    	case 8:
-	    		if (datos.get("ADRDES") == null && fi == "") {
+	    		if (datos.get(Constantes.ADRDES) == null && fi == "") {
 					linea = linea.trim();
 				}
 				else {
-					salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDES", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize(Constantes.ADRDES, linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
     			break;
 	    	case 9:
-	    		if (datos.get("ADRDE1") == null && fi == "") {
+	    		if (datos.get(Constantes.ADRDE1) == null && fi == "") {
 					linea = linea.trim();
 				}
 				else {
-					salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDE1", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize(Constantes.ADRDE1, linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
     			break;
 	    	case 10:
-	    		if (datos.get("ADRDE2") == null && fi == "") {
+	    		if (datos.get(Constantes.ADRDE2) == null && fi == "") {
 					linea = linea.trim();
 				}
 				else {
-					salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDE2", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize(Constantes.ADRDE2, linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
     			break;
 	    	case 11:
-	    		if (datos.get("ADRDE3") == null && fi == "") {
+	    		if (datos.get(Constantes.ADRDE3) == null && fi == "") {
 					linea = linea.trim();
 					masMail = false;
 				}
 				else {
-					salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDE3", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize(Constantes.ADRDE3, linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 					if (!fi.isEmpty()) {
 						masMail = true;
-						datos.put("ADRDES", fi);
-						datos.put("ADRDE1", "");
-						datos.put("ADRDE2", "");
+						datos.put(Constantes.ADRDES, fi);
+						datos.put(Constantes.ADRDE1, "");
+						datos.put(Constantes.ADRDE2, "");
 //		    			Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " // No caben todos los correos - Falta añadir: " + fi);
 //		    			System.out.println("Escribimos: " + "***** No caben todos los correos. Revisar  ****");
 //		    	    	writerCortex.write("***** No caben todos los correos. Revisar  ****");
@@ -1391,8 +1380,8 @@ public class WriterPasos {
 	    	default:
 				break;
 			}
-	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea.replaceAll("\\s*$",""));
+	    	System.out.println(Constantes.WRITING + linea);
+	    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJMAILANX.close();	
@@ -1422,20 +1411,20 @@ public class WriterPasos {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
 	    	case 2:			    		
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);	
-	    		if(metodosAux.infoDSN(pasoE, letraPaso, "ENTRADA").contains("CORTEX.")) {
-	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);	
+	    		if(metodosAux.infoDSN(pasoE, letraPaso, "ENTRADA").contains(Constantes.CORTEX)) {
+	    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+	    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 	    	    	writerCortex.newLine();
 	    		}
-	    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", metodosAux.infoDSN(pasoE, letraPaso, "ENTRADA"));
+	    		linea = linea.replace(Constantes.DEFINICION_FICHERO, metodosAux.infoDSN(pasoE, letraPaso, "ENTRADA"));
 	    		if(datos.containsKey("NUMLIN") && !datos.get("NUMLIN").trim().equals("")) {
 	    			linea = linea.trim() + ",LINIA=" + datos.get("NUMLIN");
 	    		}
 				break;			    	
 			}
-	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea.replaceAll("\\s*$",""));
+	    	System.out.println(Constantes.WRITING + linea);
+	    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJFIVACIO.close();		
@@ -1464,7 +1453,7 @@ public class WriterPasos {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
 	    	case 2:
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
 				break;
 	    	case 4:
 	    		linea = linea.replace("'APL.XXXXXXXX.NOMMEM'", "'Z." + datos.get("SRSTAT") + "'");
@@ -1472,8 +1461,8 @@ public class WriterPasos {
 	    	default:
 				break;
 			}
-	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea.replaceAll("\\s*$",""));
+	    	System.out.println(Constantes.WRITING + linea);
+	    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJOPCREC.close();	
@@ -1505,16 +1494,16 @@ public class WriterPasos {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
 	    	case 3:
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
-	    		if(datos.get("DSN").contains("CORTEX.")) {
-	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
+	    		if(datos.get("DSN").contains(Constantes.CORTEX)) {
+	    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+	    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 	    	    	writerCortex.newLine();
 	    		}
-	    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", datos.get("DSN"));
+	    		linea = linea.replace(Constantes.DEFINICION_FICHERO, datos.get("DSN"));
 				break;
 	    	case 5:
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
 	    		break;
 	    	case 7:
 	    		linea = linea.replace("&APLIC", datos.get("APL"));
@@ -1525,9 +1514,9 @@ public class WriterPasos {
 	    	case 10:
 	    		for(int i = 1; datos.containsKey("DSN" + i); i++) {
 	    			String lineaEditada = linea;
-	    			if(datos.get("DSN" + i).contains("CORTEX.")) {
-		    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-		    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    			if(datos.get("DSN" + i).contains(Constantes.CORTEX)) {
+		    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+		    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 		    	    	writerCortex.newLine();
 		    		}
 	    			lineaEditada = lineaEditada.replace("TSFUS01.DD----1", "TSFUS01." + datos.get("FICH" + i));
@@ -1538,7 +1527,7 @@ public class WriterPasos {
 	    			} 
 	    			lineaEditada = lineaEditada.replace("APL.XXXXXXXX.NOMMEM.&GENE1", "Z." + datos.get("DSN" + i));
 	    			
-	    			System.out.println("Escribimos: " + lineaEditada);
+	    			System.out.println(Constantes.WRITING + lineaEditada);
 	    	    	writerCortex.write(lineaEditada);
 	    	    	writerCortex.newLine();
 	    		}
@@ -1549,7 +1538,7 @@ public class WriterPasos {
 	    		for(int i = 1; datos.containsKey("FICHA" + i); i++){
 	    			linea = datos.get("FICHA" + i);
 	    			
-	    			System.out.println("Escribimos: " + linea);
+	    			System.out.println(Constantes.WRITING + linea);
 	    	    	writerCortex.write(linea);
 	    	    	writerCortex.newLine();	
 	    		}
@@ -1564,21 +1553,21 @@ public class WriterPasos {
 	    			nameFich.append(" ");
 	    		}
 	    		linea = linea.replace("//DDSAL--  ", "//" + nameFich);
-	    		if(datos.get("DSN").contains("CORTEX.")) {
-	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    		if(datos.get("DSN").contains(Constantes.CORTEX)) {
+	    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+	    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 	    	    	writerCortex.newLine();
 	    		}
-	    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", datos.get("DSN"));
+	    		linea = linea.replace(Constantes.DEFINICION_FICHERO, datos.get("DSN"));
 	    		break;
 	    	case 16:
-	    		if (datos.containsKey("MGMTCLAS")) {
+	    		if (datos.containsKey(Constantes.MGMTCLAS)) {
 	    			linea = linea.replace("//*", "// ");
-	    			linea = linea.replace("EXLIXXXX", datos.get("MGMTCLAS"));
+	    			linea = linea.replace(Constantes.EXLIXXXX, datos.get(Constantes.MGMTCLAS));
 	    		}
 	    		break;
 	    	case 17:
-	    		linea = linea.replace("(LONGREG,(KKK,KK))", datos.get("Definicion"));
+	    		linea = linea.replace(Constantes.TAMANIO_FICHERO, datos.get(Constantes.DEFINICION));
 	    		break;
 	    	case 19:
 	    		linea = linea.replace("//---IF-", "//" + letraPaso + numeroPaso + "IF1");
@@ -1588,15 +1577,15 @@ public class WriterPasos {
 	    		numeroPaso = (pasoS < 10) ? "0" + String.valueOf(pasoS) : String.valueOf(pasoS) ;
 	    		for(int i = 1; datos.containsKey("DSN" + i); i++) {
 	    			String lineaEditada = linea;
-	    			if(datos.get("DSN" + i).contains("CORTEX.")) {
-		    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-		    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    			if(datos.get("DSN" + i).contains(Constantes.CORTEX)) {
+		    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+		    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 		    	    	writerCortex.newLine();
 		    		}
-	    			lineaEditada = lineaEditada.replace("//---D-", "//" + letraPaso + numeroPaso + "D" + i);
+	    			lineaEditada = lineaEditada.replace(Constantes.DELETE_STEP_START, "//" + letraPaso + numeroPaso + "D" + i);
 	    			lineaEditada = lineaEditada.replace("APL.XXXXXXXX.NOMMEM.&GENE1", "Z." + datos.get("DSN" + i));
 	    			
-	    			System.out.println("Escribimos: " + lineaEditada);
+	    			System.out.println(Constantes.WRITING + lineaEditada);
 	    	    	writerCortex.write(lineaEditada);
 	    	    	writerCortex.newLine();
 	    		}
@@ -1610,8 +1599,8 @@ public class WriterPasos {
 				break;
 			}
 	    	if(!linea.equals("")) {
-		    	System.out.println("Escribimos: " + linea);
-		    	writerCortex.write(linea.replaceAll("\\s*$",""));
+		    	System.out.println(Constantes.WRITING + linea);
+		    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 		    	writerCortex.newLine();
 	    	}
 	    }
@@ -1644,16 +1633,16 @@ public class WriterPasos {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
 	    	case 3:
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
-	    		if(datos.get("DSN").contains("CORTEX.")) {
-	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
+	    		if(datos.get("DSN").contains(Constantes.CORTEX)) {
+	    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+	    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 	    	    	writerCortex.newLine();
 	    		}
-	    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", datos.get("DSN"));
+	    		linea = linea.replace(Constantes.DEFINICION_FICHERO, datos.get("DSN"));
 				break;
 	    	case 5:
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
 	    		break;
 	    	case 7:
 	    		linea = linea.replace("&APLIC", datos.get("APL"));
@@ -1664,15 +1653,15 @@ public class WriterPasos {
 	    	case 9:
 	    		for(int i = 1; datos.containsKey("DSN" + i); i++) {
 	    			String lineaEditada = linea;
-	    			if(datos.get("DSN" + i).contains("CORTEX.")) {
-		    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-		    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    			if(datos.get("DSN" + i).contains(Constantes.CORTEX)) {
+		    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+		    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 		    	    	writerCortex.newLine();
 		    		}
 	    			lineaEditada = lineaEditada.replace("TSGENQ1.DD----1", "TSGENQ1." + datos.get("FICH" + i)); 
 	    			lineaEditada = lineaEditada.replace("APL.XXXXXXXX.NOMMEM.&GENE1", "Z." + datos.get("DSN" + i));
 	    			
-	    			System.out.println("Escribimos: " + lineaEditada);
+	    			System.out.println(Constantes.WRITING + lineaEditada);
 	    	    	writerCortex.write(lineaEditada);
 	    	    	writerCortex.newLine();
 	    		}
@@ -1683,7 +1672,7 @@ public class WriterPasos {
 	    		for(int i = 1; datos.containsKey("FICHA" + i); i++){
 	    			linea = datos.get("FICHA" + i);
 	    			
-	    			System.out.println("Escribimos: " + linea);
+	    			System.out.println(Constantes.WRITING + linea);
 	    	    	writerCortex.write(linea);
 	    	    	writerCortex.newLine();	
 	    		}
@@ -1698,21 +1687,21 @@ public class WriterPasos {
 	    			nameFich.append(" ");
 	    		}
 	    		linea = linea.replace("//DDSAL--  ", "//" + nameFich);
-	    		if(datos.get("DSN").contains("CORTEX.")) {
-	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    		if(datos.get("DSN").contains(Constantes.CORTEX)) {
+	    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+	    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 	    	    	writerCortex.newLine();
 	    		}
-	    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", datos.get("DSN"));
+	    		linea = linea.replace(Constantes.DEFINICION_FICHERO, datos.get("DSN"));
 	    		break;
 	    	case 15:
-	    		if (datos.containsKey("MGMTCLAS")) {
+	    		if (datos.containsKey(Constantes.MGMTCLAS)) {
 	    			linea = linea.replace("//*", "// ");
-	    			linea = linea.replace("EXLIXXXX", datos.get("MGMTCLAS"));
+	    			linea = linea.replace(Constantes.EXLIXXXX, datos.get(Constantes.MGMTCLAS));
 	    		}
 	    		break;
 	    	case 16:
-	    		linea = linea.replace("(LONGREG,(KKK,KK))", datos.get("Definicion"));
+	    		linea = linea.replace(Constantes.TAMANIO_FICHERO, datos.get(Constantes.DEFINICION));
 	    		break;
 	    	case 18:
 	    		linea = linea.replace("//---IF-", "//" + letraPaso + numeroPaso + "IF1");
@@ -1722,15 +1711,15 @@ public class WriterPasos {
 	    		numeroPaso = (pasoS < 10) ? "0" + String.valueOf(pasoS) : String.valueOf(pasoS) ;
 	    		for(int i = 1; datos.containsKey("DSN" + i); i++) {
 	    			String lineaEditada = linea;
-	    			if(datos.get("DSN" + i).contains("CORTEX.")) {
-		    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-		    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    			if(datos.get("DSN" + i).contains(Constantes.CORTEX)) {
+		    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+		    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 		    	    	writerCortex.newLine();
 		    		}
-	    			lineaEditada = lineaEditada.replace("//---D-", "//" + letraPaso + numeroPaso + "D" + i);
+	    			lineaEditada = lineaEditada.replace(Constantes.DELETE_STEP_START, "//" + letraPaso + numeroPaso + "D" + i);
 	    			lineaEditada = lineaEditada.replace("APL.XXXXXXXX.NOMMEM.&GENE1", "Z." + datos.get("DSN" + i));
 	    			
-	    			System.out.println("Escribimos: " + lineaEditada);
+	    			System.out.println(Constantes.WRITING + lineaEditada);
 	    	    	writerCortex.write(lineaEditada);
 	    	    	writerCortex.newLine();
 	    		}
@@ -1744,8 +1733,8 @@ public class WriterPasos {
 				break;
 			}
 	    	if(!linea.equals("")) {
-		    	System.out.println("Escribimos: " + linea);
-		    	writerCortex.write(linea.replaceAll("\\s*$",""));
+		    	System.out.println(Constantes.WRITING + linea);
+		    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 		    	writerCortex.newLine();
 	    	}
 	    }
@@ -1775,7 +1764,7 @@ public class WriterPasos {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
 	    	case 2:
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
 				break;
 	    	case 3:
 	    		linea = linea.replace("DFA=XXXXXXXX", "DFA=" + datos.get("DFA"));
@@ -1827,18 +1816,18 @@ public class WriterPasos {
 	    		}
 	    		break;
 	    	case 10:
-	    		if(metodosAux.infoDSN(pasoE, letraPaso, "ENTRADA").contains("CORTEX.")) {
-	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    		if(metodosAux.infoDSN(pasoE, letraPaso, "ENTRADA").contains(Constantes.CORTEX)) {
+	    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+	    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 	    	    	writerCortex.newLine();
 	    		}
-	    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.&FAAMMDDV", "Z." + metodosAux.infoDSN(pasoE, letraPaso, "ENTRADA"));
+	    		linea = linea.replace(Constantes.DEFINICION_FICHERO, "Z." + metodosAux.infoDSN(pasoE, letraPaso, "ENTRADA"));
 	    		break;
 	    	default:
 				break;
 			}
-	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea.replaceAll("\\s*$",""));
+	    	System.out.println(Constantes.WRITING + linea);
+	    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJPAPYRUS.close();
@@ -1872,8 +1861,8 @@ public class WriterPasos {
 	    	default:
 				break;
 			}
-	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea.replaceAll("\\s*$",""));
+	    	System.out.println(Constantes.WRITING + linea);
+	    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJPAUSA.close();		
@@ -1896,8 +1885,8 @@ public class WriterPasos {
 	    String[] valor = {"JSOFCHEC", numeroPaso};
 	    histPasos.put(numeroPasoE, valor);
 	    // Borrado de ficheros de salida
-	    for (int i = 1; datos.containsKey("Borrar" + String.valueOf(i)); i++) {
-	    	if(!datos.get("Borrar" + String.valueOf(i)).equals("No")) {
+	    for (int i = 1; datos.containsKey(Constantes.BORRAR + String.valueOf(i)); i++) {
+	    	if(!datos.get(Constantes.BORRAR + String.valueOf(i)).equals("No")) {
 	    		writeJBORRAF(datos, numeroPaso, i, letraPaso, writerCortex, pasoE);
 	    	}
 	    }
@@ -1907,14 +1896,14 @@ public class WriterPasos {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
 	    	case 3:
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
 	    		if (datos.containsKey("COND1") && datos.get("COND1").equals("EVEN")){
 	    			linea = linea.replace("SOFCHEC3,", "SOFCHEC3," + "COND=((EVEN)),");
 	    		}
 	    		
 				break;
 	    	case 4:
-	    		String[] valores = datos.get("PARDB2").split(" ");
+	    		String[] valores = datos.get(Constantes.PARDB2).split(" ");
 	    		String[] plantillas = {"&NOMQDRE", "&FECHAQ", "&OPCIONQ"};
 	    		String lineaEditada = "";
 	    		int i = 0;
@@ -1924,7 +1913,7 @@ public class WriterPasos {
 		    		}else{
 		    			lineaEditada = "**   SET " + plantillas[i].substring(1) +"='" + valores[i] + "'";
 		    			Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " // añadir literial cabecera PROG=SOFCHEC3");
-		    			System.out.println("Escribimos: " + lineaEditada);
+		    			System.out.println(Constantes.WRITING + lineaEditada);
 		    	    	writerCortex.write(lineaEditada);
 		    	    	writerCortex.newLine();
 		    		}
@@ -1935,7 +1924,7 @@ public class WriterPasos {
 	    			}else {
 	    				lineaEditada = "**   SET " + valores[i] +"='" + valores[i] + "'";
 	    				Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " // añadir literial cabecera PROG=SOFCHEC3");
-		    			System.out.println("Escribimos: " + lineaEditada);
+		    			System.out.println(Constantes.WRITING + lineaEditada);
 		    	    	writerCortex.write(lineaEditada);
 		    	    	writerCortex.newLine();
 		    	    	linea = linea + "-&" + valores[i];
@@ -1951,19 +1940,19 @@ public class WriterPasos {
 				break;
 			}
 	    	if (!linea.equals("")) {
-		    	System.out.println("Escribimos: " + linea);
-		    	writerCortex.write(linea.replaceAll("\\s*$",""));
+		    	System.out.println(Constantes.WRITING + linea);
+		    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 		    	writerCortex.newLine();
 	    	}
 	    }
 	    lectorJSOFCHEC.close();		
 	    
 	  //--------------- Miramos si hay ficheros de entrada:
-	    for (int i = 1; datos.containsKey("Entrada" + String.valueOf(i)); i++) {
+	    for (int i = 1; datos.containsKey(Constantes.ENTRADA + String.valueOf(i)); i++) {
 	    	writeJFICHENT(datos, numeroPaso, i, letraPaso, writerCortex, pasoE);
 	    }
 	  //--------------- Miramos si hay ficheros de Salida:
-	    for (int i = 1; datos.containsKey("Salida" + String.valueOf(i)); i++) {
+	    for (int i = 1; datos.containsKey(Constantes.SALIDA + String.valueOf(i)); i++) {
 	    	writeJFICHSAL(datos, numeroPaso, i, letraPaso, writerCortex, pasoE);
 	    }
 	    
@@ -1990,7 +1979,7 @@ public class WriterPasos {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
 	    	case 2:
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
 				break;
 	    	case 3:
 	    		linea = linea.replace("XXXXXXXX,", "'" + datos.get("TAULA") + "',");
@@ -2011,8 +2000,8 @@ public class WriterPasos {
 	    	default:
 				break;
 			}
-	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea.replaceAll("\\s*$",""));
+	    	System.out.println(Constantes.WRITING + linea);
+	    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJSOFINF.close();
@@ -2039,7 +2028,7 @@ public class WriterPasos {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
 	    	case 2:
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
 				break;
 	    	case 3:
 	    		StringBuffer des = new StringBuffer("DES=" + datos.get("DES") + ",");
@@ -2127,8 +2116,8 @@ public class WriterPasos {
 	    	default:
 				break;
 			}
-	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea.replaceAll("\\s*$",""));
+	    	System.out.println(Constantes.WRITING + linea);
+	    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJFTPS123.close();	
@@ -2155,7 +2144,7 @@ public class WriterPasos {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
 	    	case 2:
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
 				break;
 	    	case 3:
 	    		StringBuffer orig = new StringBuffer("ORIG=" + datos.get("ORIG") + ",");
@@ -2209,8 +2198,8 @@ public class WriterPasos {
 	    	default:
 				break;
 			}
-	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea.replaceAll("\\s*$",""));
+	    	System.out.println(Constantes.WRITING + linea);
+	    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJFTPVER.close();	
@@ -2242,7 +2231,7 @@ public class WriterPasos {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
 	    	case 2:
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
 				break;
 	    	case 3:
 	    		StringBuffer SQLIN = new StringBuffer("SQLIN='" + datos.get("SQLIN") + "',");
@@ -2272,52 +2261,52 @@ public class WriterPasos {
 	    		linea = linea.replace("FITTXT=                                   ", fitTxt);
 	    		break;
 	    	case 6:
-	    		linea = (datos.get("ASUNTO") == null) ? linea.trim() : linea.trim() + datos.get("ASUNTO");
+	    		linea = (datos.get(Constantes.ASUNTO) == null) ? linea.trim() : linea.trim() + datos.get(Constantes.ASUNTO);
 	    		break;
 	    	case 7:
-	    		linea = (datos.get("ADREMI") == null) ? linea.trim() : linea.trim() + datos.get("ADREMI");
+	    		linea = (datos.get(Constantes.ADREMI) == null) ? linea.trim() : linea.trim() + datos.get(Constantes.ADREMI);
 	    		break;
 	    	case 8:
-	    		if (datos.get("ADRDES") == null && fi == "") {
+	    		if (datos.get(Constantes.ADRDES) == null && fi == "") {
 					linea = linea.trim();
 				}
 				else {
-					salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDES", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize(Constantes.ADRDES, linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
     			break;
 	    	case 9:
-	    		if (datos.get("ADRDE1") == null && fi == "") {
+	    		if (datos.get(Constantes.ADRDE1) == null && fi == "") {
 					linea = linea.trim();
 				}
 				else {
-					salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDE1", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize(Constantes.ADRDE1, linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
     			break;
 	    	case 10:
-	    		if (datos.get("ADRDE2") == null && fi == "") {
+	    		if (datos.get(Constantes.ADRDE2) == null && fi == "") {
 					linea = linea.trim();
 				}
 				else {
-					salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDE2", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize(Constantes.ADRDE2, linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 				}
     			break;
 	    	case 11:
-	    		if (datos.get("ADRDE3") == null && fi == "") {
+	    		if (datos.get(Constantes.ADRDE3) == null && fi == "") {
 					linea = linea.trim();
 				}
 				else {
-					salida = (ArrayList<String>) MetodosAux.checkLineSize("ADRDE3", linea, fi, datos); 
+					salida = (ArrayList<String>) MetodosAux.checkLineSize(Constantes.ADRDE3, linea, fi, datos); 
 					linea = salida.get(0);
 					fi = salida.get(1);
 					if (!fi.isEmpty()) {
 		    			Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " // No caben todos los correos - Falta añadir: " + fi);
-		    			System.out.println("Escribimos: " + "***** No caben todos los correos. Revisar  ****");
+		    			System.out.println(Constantes.WRITING + "***** No caben todos los correos. Revisar  ****");
 		    	    	writerCortex.write("***** No caben todos los correos. Revisar  ****");
 		    	    	writerCortex.newLine();
 		    	    	fi = "";
@@ -2392,8 +2381,8 @@ public class WriterPasos {
 	    	default:
 				break;
 			}
-	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea.replaceAll("\\s*$",""));
+	    	System.out.println(Constantes.WRITING + linea);
+	    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJMAIL123.close();	
@@ -2425,23 +2414,23 @@ public class WriterPasos {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
 	    	case 2:
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
-	    		if(metodosAux.infoDSN(pasoE, letraPaso, "SYSUT2").contains("CORTEX.")) {
-	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
+	    		if(metodosAux.infoDSN(pasoE, letraPaso, "SYSUT2").contains(Constantes.CORTEX)) {
+	    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+	    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 	    	    	writerCortex.newLine();
 	    		}
 	    		linea = linea.replace("APL.YYYYYYYY.NOMMEM2.&FAAMMDDV", metodosAux.infoDSN(pasoE, letraPaso, "SYSUT2"));
 	    		break;
 	    	case 3:
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
 	    		break;
 	    	case 4:
 	    		for(int i = 0; infoFichIn.containsKey("DSN" + i); i++) {
 	    			String lineaEditada = linea;
-	    			if(infoFichIn.get("DSN" + i).contains("CORTEX.")) {
-		    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-		    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    			if(infoFichIn.get("DSN" + i).contains(Constantes.CORTEX)) {
+		    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+		    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 		    	    	writerCortex.newLine();
 		    		}
 	    			if(i==0) {
@@ -2450,34 +2439,34 @@ public class WriterPasos {
 	    				lineaEditada = lineaEditada.replace("//SYSUT1", "//      ");
 	    				lineaEditada = lineaEditada.replace("APL.XXXXXXXX.NOMMEM1.&FAAMMDDV", infoFichIn.get("DSN" + i));
 	    			}
-	    			System.out.println("Escribimos: " + lineaEditada);
+	    			System.out.println(Constantes.WRITING + lineaEditada);
 	    	    	writerCortex.write(lineaEditada);
 	    	    	writerCortex.newLine();
 	    		}
 	    		linea = "";
 	    		break;
 	    	case 5:
-	    		if(metodosAux.infoDSN(pasoE, letraPaso, "SYSUT2").contains("CORTEX.")) {
-	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    		if(metodosAux.infoDSN(pasoE, letraPaso, "SYSUT2").contains(Constantes.CORTEX)) {
+	    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+	    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 	    	    	writerCortex.newLine();
 	    		}
 	    		linea = linea.replace("APL.YYYYYYYY.NOMMEM2.&FAAMMDDV", metodosAux.infoDSN(pasoE, letraPaso, "SYSUT2"));
 	    		break;
 	    	case 7:
-	    		if(metodosAux.infoDSN(pasoE, letraPaso, "SYSUT1").contains("CORTEX.")) {
-	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    		if(metodosAux.infoDSN(pasoE, letraPaso, "SYSUT1").contains(Constantes.CORTEX)) {
+	    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+	    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 	    	    	writerCortex.newLine();
 	    		}
 	    		linea = linea.replace("APL.XXXXXXXX.NOMMEM1.&FAAMMDDV,", metodosAux.infoDSN(pasoE, letraPaso, "SYSUT1"));
-	    		if(infoFichOut.containsKey("MGMTCLAS")) {
+	    		if(infoFichOut.containsKey(Constantes.MGMTCLAS)) {
 	    			linea = linea.trim() + ",";
 	    		}
 	    		break;
 	    	case 8:
-	    		if(infoFichOut.containsKey("MGMTCLAS")) {
-	    			linea = linea.replace("EXLIXXXX", infoFichOut.get("MGMTCLAS"));
+	    		if(infoFichOut.containsKey(Constantes.MGMTCLAS)) {
+	    			linea = linea.replace(Constantes.EXLIXXXX, infoFichOut.get(Constantes.MGMTCLAS));
 	    		}else {
 	    			linea = linea.replace("// ", "//*");
 	    		}
@@ -2486,8 +2475,8 @@ public class WriterPasos {
 				break;
 			}
 	    	if(!linea.equals("")) {
-		    	System.out.println("Escribimos: " + linea);
-		    	writerCortex.write(linea.replaceAll("\\s*$",""));
+		    	System.out.println(Constantes.WRITING + linea);
+		    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 		    	writerCortex.newLine();
 	    	}
 	    }
@@ -2516,12 +2505,12 @@ public class WriterPasos {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
 	    	case 2:
-	    		linea = linea.replace("//---D-", "//" + letraPaso + numeroPaso);
+	    		linea = linea.replace(Constantes.DELETE_STEP_START, "//" + letraPaso + numeroPaso);
 	    		break;
 	    	default:
 				break;
 	    	}
-	    	System.out.println("Escribimos: " + linea);
+	    	System.out.println(Constantes.WRITING + linea);
 	    	writerCortex.write(linea);
 	    	writerCortex.newLine();
 	    }
@@ -2534,7 +2523,7 @@ public class WriterPasos {
     		lineaProc = (ArrayList<String>) metodosAux.buscaInfoProc(pasoE, letraPaso, "SYSIN");
 		    for(int i = 0; i < lineaProc.size(); i++) {
 		    	Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + lineaProc.get(i));
-		    	System.out.println("Escribimos: " + lineaProc.get(i).replace("//", "**"));
+		    	System.out.println(Constantes.WRITING + lineaProc.get(i).replace("//", "**"));
 		    	writerCortex.write(lineaProc.get(i).replace("//", "**"));
 		    	writerCortex.newLine();
 		    }
@@ -2567,13 +2556,13 @@ public class WriterPasos {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
 	    	case 2:
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
 	    		break;
 	    	default:
 				break;
 	    	}
-	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea.replaceAll("\\s*$",""));
+	    	System.out.println(Constantes.WRITING + linea);
+	    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJFIVERDS.close();	 
@@ -2583,7 +2572,7 @@ public class WriterPasos {
     	writerCortex.newLine();
 	    for(int i = 0; i < lineaProc.size(); i++) {
 	    	Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + lineaProc.get(i));
-	    	System.out.println("Escribimos: " + lineaProc.get(i).replace("//", "**"));
+	    	System.out.println(Constantes.WRITING + lineaProc.get(i).replace("//", "**"));
 	    	writerCortex.write(lineaProc.get(i).replace("//", "**"));
 	    	writerCortex.newLine();
 	    }
@@ -2612,7 +2601,7 @@ public class WriterPasos {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
 	    	case 2:
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
 	    		break;
 	    	case 3:
 	    		StringBuffer des = new StringBuffer("DES=" + datos.get("DES") + ",");
@@ -2630,9 +2619,9 @@ public class WriterPasos {
 	    	    	writerCortex.write("***** REVISAR FICHERO - DSN NO ENCONTRADA *****");
 	    	    	writerCortex.newLine();
 	    		}
-	    		if(dsn.contains("CORTEX.")) {
-	    			Avisos.LOGGER.log(Level.INFO,"**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
-	    			writerCortex.write("**** FICHERO DE LIBRERÍA CORTEX - AVISAR APLICACIÓN ****");
+	    		if(dsn.contains(Constantes.CORTEX)) {
+	    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
+	    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 	    	    	writerCortex.newLine();
 	    		}
 	    	    StringBuffer host = new StringBuffer("HOST=Z." + dsn + ",");
@@ -2718,8 +2707,8 @@ public class WriterPasos {
 				break;
 			}
 	    	if(!linea.equals("")) {
-		    	System.out.println("Escribimos: " + linea);
-		    	writerCortex.write(linea.replaceAll("\\s*$",""));
+		    	System.out.println(Constantes.WRITING + linea);
+		    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 		    	writerCortex.newLine();
 	    	}
 	    }
@@ -2748,11 +2737,11 @@ public class WriterPasos {
 	    //----------------Método---------------------------------------------
 	    
 	    //--------------- Miramos si hay archivos para borrar antes de ejecutar:
-	    for (int i = 1; datos.containsKey("Salida" + String.valueOf(i)); i++) {
-	    	nombre = datos.get("Salida" + String.valueOf(i));
+	    for (int i = 1; datos.containsKey(Constantes.SALIDA + String.valueOf(i)); i++) {
+	    	nombre = datos.get(Constantes.SALIDA + String.valueOf(i));
 		    infoFich = metodosAux.infoFichero(pasoE, letraPaso, nombre);
 		    if(infoFich.get("DISP").equals("NEW")) {
-		    	datos.replace("Borrar" + i, nombre);
+		    	datos.replace(Constantes.BORRAR + i, nombre);
 		    	writeJBORRAF(datos, numeroPaso, i, letraPaso, writerCortex, pasoE);
 		    }
 	    }
@@ -2762,13 +2751,13 @@ public class WriterPasos {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
 	    	case 2:
-	    		linea = linea.replace("//---", "//" + letraPaso + numeroPaso);
+	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
 	    		linea = linea.replace("NOMPROGR", datos.get("PGM"));
 	    		if(!datos.containsKey("PARM")) {
 	    			linea = linea.replace(datos.get("PGM") + ",PARM=&VAR1-&VAR2-...", datos.get("PGM"));
 	    		}else {
 	    			if (metodosAux.checkLiteralesPARDB2(datos.get("PARM").replace("*", "-"))) {
-		    			writerCortex.write("****** LITERALES EN LOS PARAMETROS DEL PROGRAMA: " + datos.get("PARDB2") + "*****");
+		    			writerCortex.write("****** LITERALES EN LOS PARAMETROS DEL PROGRAMA: " + datos.get(Constantes.PARDB2) + "*****");
 		    	    	writerCortex.newLine();
 		    	    	Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " // Literales en el programa: "
 		    	    			+ datos.get("PARM"));
@@ -2779,21 +2768,21 @@ public class WriterPasos {
 			default:
 				break;
 	    	}
-	    	System.out.println("Escribimos: " + linea);
-	    	writerCortex.write(linea.replaceAll("\\s*$",""));
+	    	System.out.println(Constantes.WRITING + linea);
+	    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
 	    	writerCortex.newLine();
 	    }
 	    lectorJPGM.close();
 //--------------- Miramos si hay ficheros Cortex:
-	    if (datos.containsKey("FCortex")) {
+	    if (datos.containsKey(Constantes.F_CORTEX)) {
 	    	writeFCortex(datos, writerCortex);
 	    }
 //--------------- Miramos si hay ficheros de entrada:
-	    for (int i = 1; datos.containsKey("Entrada" + String.valueOf(i)); i++) {
+	    for (int i = 1; datos.containsKey(Constantes.ENTRADA + String.valueOf(i)); i++) {
 	    	writeJFICHENT(datos, numeroPaso, i, letraPaso, writerCortex, pasoE);
 	    }
 //--------------- Miramos si hay ficheros de Salida:
-	    for (int i = 1; datos.containsKey("Salida" + String.valueOf(i)); i++) {
+	    for (int i = 1; datos.containsKey(Constantes.SALIDA + String.valueOf(i)); i++) {
 	    	writeJFICHSAL(datos, numeroPaso, i, letraPaso, writerCortex, pasoE);
 	    }
 //--------------- Miramos si hay reportes para informar:
