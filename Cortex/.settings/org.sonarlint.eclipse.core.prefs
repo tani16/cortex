@@ -1,4 +1,4 @@
 autoEnabled=true
 eclipse.preferences.version=1
 extraProperties=
-fileExclusions=
+fileExclusions=FILE\:test/com/cortex/project/MetodosAuxTest.java

@@ -364,14 +364,14 @@ public class MetodosAux {
 			ficheros = datos.get("FICHA" + i).split(",");
 			ficheros[0] = ficheros[0].replace("ENTRADA=", Constantes.EMPTY);
 			
-			if(ficheros[0].contains(Constantes.SORTIDA)) {
-				infoFich = infoFichero(pasoE, letraPaso, ficheros[0].replace(Constantes.SORTIDA, Constantes.EMPTY));
+			if(ficheros[0].contains(Constantes.SORTIDA1)) {
+				infoFich = infoFichero(pasoE, letraPaso, ficheros[0].replace(Constantes.SORTIDA1, Constantes.EMPTY));
 				if (infoFich.containsKey(Constantes.MGMTCLAS)){
 					datos.put(Constantes.MGMTCLAS, infoFich.get(Constantes.MGMTCLAS));
 				}
 				datos.put(Constantes.DEFINICION, infoFich.get(Constantes.DEFINICION));
 				datos.put("DSN", infoFich.get("DSN"));
-				datos.put("SALIDA", ficheros[0].replace(Constantes.SORTIDA, Constantes.EMPTY));
+				datos.put("SALIDA", ficheros[0].replace(Constantes.SORTIDA1, Constantes.EMPTY));
 				
 			}else {
 				for (int j = 0; j < ficheros.length; j++) {

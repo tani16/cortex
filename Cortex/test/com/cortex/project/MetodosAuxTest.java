@@ -50,7 +50,7 @@ public class MetodosAuxTest {
 	@Test
 	public void testCabeceraVariableVacia() throws ExceptionCortex {
 		mainApp.programa = "AGE21C";
-		Map<String, String> datos = new HashMap<>();
+		Map<String, String> datos;
 		
 		datos = metodosAux.cabecera();
 	    
@@ -119,10 +119,9 @@ public class MetodosAuxTest {
 		assertEquals(esperado, salida);
 	}
 	
-	@SuppressWarnings("static-access")
 	@Test
 	public void testBuscaInfoProcSalidaPasoMayor10() throws ExceptionCortex {
-		mainApp.programa = "COM05F";
+		com.cortex.project.mainApp.programa = "COM05F";
 		ArrayList<String> esperado = new ArrayList<String>();
 		esperado.add("//SORTIDA  DD  DSN=COM.SORTI008.COM05F.&GENEM,DISP=(NEW,CATLG,DELETE),");
 		esperado.add("//             RECFM=FB,LRECL=500,");
@@ -135,11 +134,10 @@ public class MetodosAuxTest {
 	}
 	
 //	------------------------ infoFichero ------------------------------
-	@SuppressWarnings("static-access")
 	@Test
 	public void testInfoFicheroSinProc() throws ExceptionCortex {
 		Map<String, String> datos = new HashMap<String, String>();
-		mainApp.withProc = false;
+		com.cortex.project.mainApp.withProc = false;
 		datos = metodosAux.infoFichero(0, "F", "SORTIDA");
 		
 		assertEquals("SORTIDA", datos.get("DSN"));
