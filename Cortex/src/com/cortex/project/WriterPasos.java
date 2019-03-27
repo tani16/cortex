@@ -1,6 +1,5 @@
 package com.cortex.project;
 
-import java.awt.Container;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -216,91 +215,7 @@ public class WriterPasos {
 		    while((linea = lectorJFICHSAL.readLine()) != null) {
 		    	contadorLinea ++;
 		    	linea = jfichsal.processJFICHSAL(linea, contadorLinea);
-//		    	switch (contadorLinea) {
-//		    	case 3:
-//		    		linea = linea.replace(Constantes.DDNAME, nombre);
-//		    		if(infoFich.get(Constantes.DSN).contains(Constantes.CORTEX)) {
-//		    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
-//		    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
-//		    	    	writerCortex.newLine();
-//		    		}
-//		    		linea = linea.replace(Constantes.DEFINICION_FICHERO, infoFich.get(Constantes.DSN));
-//		    		break;
-//		    	case 5:
-//		    		if(infoFich.containsKey(Constantes.MGMTCLAS)) {
-//		    			linea = linea.replace(Constantes.EXLIXXXX, infoFich.get(Constantes.MGMTCLAS));
-//		    		}else {
-//		    			linea = linea.replace("// ", "//*");
-//		    		}
-//		    		break;
-//		    	case 6:
-//		    		if (infoFich.get("DISP").equals("NEW") && infoFich.get(Constantes.LRECL).equals(Constantes.LRECL)) {
-//		    			System.out.println(Constantes.LOG_LRECL_NOT_FOUND);
-//		    			writerCortex.write(Constantes.LOG_LRECL_NOT_FOUND);
-//						writerCortex.newLine();
-//		    		}else {
-//			    		linea = linea.replace(Constantes.TAMANIO_FICHERO, infoFich.get(Constantes.DEFINICION));
-//		    		}
-//		    		break;
-//		    	case 9:
-//		    		linea = linea.replace(Constantes.DDNAME, nombre);
-//		    		if(infoFich.get(Constantes.DSN).contains(Constantes.CORTEX)) {
-//		    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
-//		    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
-//		    	    	writerCortex.newLine();
-//		    		}
-//		    		linea = linea.replace("APL.XXXXXXXX.NOMMEM.XP", infoFich.get(Constantes.DSN));
-//		    		break;
-//		    	case 11:
-//		    		if (infoFich.get("DISP").equals("TEMP") && infoFich.get(Constantes.LRECL).equals(Constantes.LRECL)) {
-//		    			System.out.println(Constantes.LOG_LRECL_NOT_FOUND);
-//		    			writerCortex.write(Constantes.LOG_LRECL_NOT_FOUND);
-//						writerCortex.newLine();
-//		    		}else {
-//			    		linea = linea.replace(Constantes.TAMANIO_FICHERO, infoFich.get(Constantes.DEFINICION));
-//		    		}
-//		    		break;
-//		    	case 14:
-//		    		linea = linea.replace(Constantes.DDNAME, nombre);
-//		    		if(infoFich.get(Constantes.DSN).contains(Constantes.CORTEX)) {
-//		    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
-//		    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
-//		    	    	writerCortex.newLine();
-//		    		}
-//		    		linea = linea.replace(Constantes.DEFINICION_FICHERO, infoFich.get(Constantes.DSN));
-//		    		break;
-//		    	case 16:
-//		    		if(infoFich.containsKey(Constantes.MGMTCLAS)) {
-//		    			linea = linea.replace(Constantes.EXLIXXXX, infoFich.get(Constantes.MGMTCLAS));
-//		    		}else {
-//		    			linea = linea.replace("// ", "//*");
-//		    		}
-//		    		break;
-//		    	case 17:
-//		    		if (infoFich.get("DISP").equals("MOD") && infoFich.get(Constantes.LRECL).equals(Constantes.LRECL)) {
-//		    			System.out.println(Constantes.LOG_LRECL_NOT_FOUND);
-//		    			writerCortex.write(Constantes.LOG_LRECL_NOT_FOUND);
-//						writerCortex.newLine();
-//		    		}else {
-//			    		linea = linea.replace(Constantes.TAMANIO_FICHERO, infoFich.get(Constantes.DEFINICION));
-//		    		}
-//		    		break;
-//		    	default:
-//					break;
-//		    	}
-//		    	
-//		    	if(infoFich.get("DISP").equals("NEW") && contadorLinea > 6) {
-//		    		//No escribimos el resto de ficheros (mod, temp)
-//		    		linea = "";
-//		    	}
-//		    	if(infoFich.get("DISP").equals("MOD") && contadorLinea < 12) {
-//		    		//No escribimos el resto de ficheros (new, temp)
-//		    		linea = "";
-//		    	}
-//		    	if(infoFich.get("DISP").equals("TEMP") && (contadorLinea < 7 || contadorLinea > 11)) {
-//		    		//No escribimos el resto de ficheros (new, mod)
-//		    		linea = "";
-//		    	} 
+
 		    	if (!jfichsal.getAvisos().equals("")) {
 	    			Avisos.LOGGER.log(Level.INFO, jfichsal.getAvisos());
 	    			writerCortex.write(jfichsal.getAvisos());

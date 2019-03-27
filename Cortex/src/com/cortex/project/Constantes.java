@@ -25,7 +25,7 @@ public final class Constantes {
 	static final String JBORRAF_TEMPLATE = "JBORRAF.txt";
 	static final String JMAILTXT_TEMPLATE = "JMAILTXT.txt";
 	static final String JSORT_TEMPLATE = "JSORT.txt";
-	static final String JFTPSEND_TEMPLATE = "FTPSEND.txt";
+	static final String JFTPSEND_TEMPLATE = "JFTPSEND.txt";
 	static final String JFTPREB_TEMPLATE = "JFTPREB.txt";
 	static final String JFTPDEL_TEMPLATE = "JFTPDEL.txt";
 	static final String JMAILMSG_TEMPLATE = "JMAILMSG.txt";
