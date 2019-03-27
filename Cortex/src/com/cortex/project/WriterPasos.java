@@ -1047,6 +1047,14 @@ public class WriterPasos {
 	    BufferedReader lectorJMAILMSG = TratamientoDeFicheros.readerTemplate(ficheroJMAILMSG);
 	    //----------------Método---------------------------------------------    
 	    
+	    // Aviso paso JMAILMSG
+	    String mensaje = letraPaso + String.valueOf(pasoE) + " // Revisar este Paso JMAILMSG ";
+		Avisos.LOGGER.log(Level.INFO, mensaje);
+		System.out.println(mensaje);
+    	writerCortex.write("***** " + mensaje + " *****");
+    	writerCortex.newLine();
+    	//---------------------
+    	
 	    while((linea = lectorJMAILMSG.readLine()) != null) {
 	    	contadorLinea ++;
 	    	switch (contadorLinea) {
@@ -1076,7 +1084,7 @@ public class WriterPasos {
 //	    			String aux = datos.get("SORTIDA");
 //	    			aux = aux.replaceAll("_&", "-&");
 //	    			datos.replace("SORTIDA", aux);
-	    			String mensaje = letraPaso + String.valueOf(pasoE) + " // Revisar fichero -  contiene _& ";
+	    			mensaje = letraPaso + String.valueOf(pasoE) + " // Revisar fichero -  contiene _& ";
 					Avisos.LOGGER.log(Level.INFO, mensaje);
 	    			System.out.println(Constantes.LOG_FICHERO_CON);
 	    	    	writerCortex.write(Constantes.LOG_FICHERO_CON);
