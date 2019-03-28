@@ -89,7 +89,7 @@ public class WriterPasos {
 	    }
 //--------------- Miramos si hay ficheros de Salida:
 	    for (int i = 1; datos.containsKey(Constantes.SALIDA + String.valueOf(i)); i++) {
-	    	writeJFICHSAL(datos, numeroPaso, i, letraPaso, writerCortex, pasoE);
+	    	writeJFICHSAL(datos, i, letraPaso, writerCortex, pasoE);
 	    }
 //--------------- Miramos si hay reportes para informar:
 	    writeReports(datos, writerCortex, pasoE, letraPaso);
@@ -192,7 +192,7 @@ public class WriterPasos {
 	    }
 	}
 	
-	public void writeJFICHSAL(Map<String, String> datos, String numeroPaso, int i, String letraPaso,
+	public void writeJFICHSAL(Map<String, String> datos, int i, String letraPaso,
 			BufferedWriter writerCortex, int pasoE) throws IOException, ExceptionCortex {
 	  //----------------Variables------------------------------------------
 	    Map<String, String> infoFich;
@@ -247,30 +247,27 @@ public class WriterPasos {
 	    BufferedReader lectorJFICHENT = TratamientoDeFicheros.readerTemplate(ficheroJFICHENT);
 	    //----------------Método---------------------------------------------
 	    writeComments(datos, writerCortex, "ComFichE", i);
-
 	    Map<String, String> infoFich;
+	    
 	    nombre = datos.get(Constantes.ENTRADA + i);
 		for(int j = nombre.length(); j < 8; j++) {
 			nombre += " ";
 		}
 	    infoFich = metodosAux.infoFichero(pasoE, letraPaso, nombre);
+	    
 	    if (!infoFich.containsKey(Constantes.DUMMY)) {
 		    while((linea = lectorJFICHENT.readLine()) != null) {
 		    	contadorLinea ++;
-		    	if(i > 1 && contadorLinea == 1) {
-		    		//No queremos que vuelva a escribir la primera línea de la plantilla
-		    		continue;
-		    	}
 		    	switch (contadorLinea) {
 		    	case 2:
-		    		linea = linea.replace(Constantes.DDNAME, nombre);
-		    		if(infoFich.get(Constantes.DSN).contains(Constantes.CORTEX)) {
+		    		linea = linea.replace(Constantes.getDdname(), nombre);
+		    		if(infoFich.get(Constantes.getDsn()).contains(Constantes.getCortex())) {
 		    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
 		    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
 		    	    	writerCortex.newLine();
 		    		}
-		    		linea = linea.replace(Constantes.DEFINICION_FICHERO, "Z." + infoFich.get(Constantes.DSN));
-			    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
+		    		linea = linea.replace(Constantes.getDefinicionFichero(), "Z." + infoFich.get(Constantes.getDsn()));
+			    	writerCortex.write(linea.replaceAll(Constantes.getEndSpaces(),""));
 			    	writerCortex.newLine();
 			    	linea = "";
 			    	if(infoFich.containsKey("DSN1")) {
@@ -286,6 +283,10 @@ public class WriterPasos {
 		    		break;
 		    	default:
 					break;
+		    	}
+		    	if(i > 1 && contadorLinea == 1) {
+		    		//No queremos que vuelva a escribir la primera línea de la plantilla
+		    		continue;
 		    	}
 		    	if (!linea.equals("")) {
 			    	System.out.println(Constantes.WRITING + linea);
@@ -1899,7 +1900,7 @@ public class WriterPasos {
 	    }
 	  //--------------- Miramos si hay ficheros de Salida:
 	    for (int i = 1; datos.containsKey(Constantes.SALIDA + String.valueOf(i)); i++) {
-	    	writeJFICHSAL(datos, numeroPaso, i, letraPaso, writerCortex, pasoE);
+	    	writeJFICHSAL(datos, i, letraPaso, writerCortex, pasoE);
 	    }
 	    
 	    writeReports(datos, writerCortex, pasoE, letraPaso);
@@ -2729,7 +2730,7 @@ public class WriterPasos {
 	    }
 //--------------- Miramos si hay ficheros de Salida:
 	    for (int i = 1; datos.containsKey(Constantes.SALIDA + String.valueOf(i)); i++) {
-	    	writeJFICHSAL(datos, numeroPaso, i, letraPaso, writerCortex, pasoE);
+	    	writeJFICHSAL(datos, i, letraPaso, writerCortex, pasoE);
 	    }
 //--------------- Miramos si hay reportes para informar:
 	    writeReports(datos, writerCortex, pasoE, letraPaso);
