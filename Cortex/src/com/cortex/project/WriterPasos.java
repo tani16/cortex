@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import com.cortex.project.templates.JFICHSAL;
+import com.cortex.project.templates.JMAILTXT;
 
 
 public class WriterPasos {
@@ -350,157 +351,34 @@ public class WriterPasos {
 	public void writeMAILTXT(Map<String, String> datos, String letraPaso, int pasoE, BufferedWriter writerCortex) throws IOException, ExceptionCortex {
 	    //----------------Variables------------------------------------------
 	    String linea;
-	    String fi = Constantes.EMPTY;
 	    pasoS += 2;
 	    String numeroPaso = (pasoS < 10) ? "0" + pasoS : String.valueOf(pasoS) ;
 	    String numeroPasoE = (pasoE < 10) ? "0" + pasoE : String.valueOf(pasoE) ;
 	    String[] valor = {"MAIL00", numeroPaso};
 	    histPasos.put(numeroPasoE, valor);
-	    int contadorLinea = 0;
-	    ArrayList<String> salida;
-	    
+	    int contadorLinea = 0;	    
 	    //----------------Fichero de plantilla JJMAILTXT--------------------------
 	    FileReader ficheroMAILTXT = TratamientoDeFicheros.openTemplate(Constantes.JMAILTXT_TEMPLATE);
 	    BufferedReader lectorMAILTXT = TratamientoDeFicheros.readerTemplate(ficheroMAILTXT);	
-	    
 	    //----------------Método---------------------------------------------
+	    
+	    JMAILTXT jmailtxt = new JMAILTXT(letraPaso, numeroPaso, datos);
 	    while((linea = lectorMAILTXT.readLine()) != null) {
 	    	contadorLinea ++;
-	    	switch (contadorLinea) {
-	    	case 2:
-	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
-				break;
-	    	case 4:
-	    		linea = (datos.get(Constantes.ASUNTO) == null) ? linea.trim() : linea.trim() + datos.get(Constantes.ASUNTO);
-	    		break;
-	    	case 5:
-	    		linea = (datos.get(Constantes.ADREMI) == null) ? linea.trim() : linea.trim() + datos.get(Constantes.ADREMI);
-	    		break;
-	    	case 6:
-	    		if (datos.get(Constantes.ADRDES) == null && fi == "") {
-					linea = linea.trim();
-				}
-				else {
-					salida = (ArrayList<String>) MetodosAux.checkLineSize(Constantes.ADRDES, linea, fi, datos); 
-					linea = salida.get(0);
-					fi = salida.get(1);
-				}
-    			break;
-	    	case 7:
-	    		if (datos.get(Constantes.ADRDE1) == null && fi == "") {
-					linea = linea.trim();
-				}
-				else {
-					salida = (ArrayList<String>) MetodosAux.checkLineSize(Constantes.ADRDE1, linea, fi, datos); 
-					linea = salida.get(0);
-					fi = salida.get(1);
-				}
-    			break;
-	    	case 8:
-	    		if (datos.get(Constantes.ADRDE2) == null && fi == "") {
-					linea = linea.trim();
-				}
-				else {
-					salida = (ArrayList<String>) MetodosAux.checkLineSize(Constantes.ADRDE2, linea, fi, datos); 
-					linea = salida.get(0);
-					fi = salida.get(1);
-				}
-    			break;
-	    	case 9:
-	    		if (datos.get(Constantes.ADRDE3) == null && fi == "") {
-					linea = linea.trim();
-					masMail = false;
-				}
-				else {
-					salida = (ArrayList<String>) MetodosAux.checkLineSize(Constantes.ADRDE3, linea, fi, datos); 
-					linea = salida.get(0);
-					fi = salida.get(1);
-					if (!fi.isEmpty()) {
-						masMail = true;
-						datos.put(Constantes.ADRDES, fi);
-						datos.put(Constantes.ADRDE1, "");
-						datos.put(Constantes.ADRDE2, "");
-//		    			Avisos.LOGGER.log(Level.INFO, letraPaso + String.valueOf(pasoE) + " // No caben todos los correos - Falta añadir: " + fi);
-//		    			System.out.println("Escribimos: " + "***** No caben todos los correos. Revisar  ****");
-//		    	    	writerCortex.write("***** No caben todos los correos. Revisar  ****");
-//		    	    	writerCortex.newLine();
-		    	    	fi = "";
-					}
-				}
-    			break;
-	    	case 10:
-	    		linea = (datos.get(Constantes.TIPMAIL) == null) ? linea.trim() : linea.trim() + datos.get(Constantes.TIPMAIL);
-	    		break;
-	    	case 12:
-	    		linea = (datos.get(Constantes.UIDPETI) == null) ? linea.trim() : linea.trim() + datos.get(Constantes.UIDPETI);
-	    		break;
-	    	case 13:
-	    		linea = (datos.get(Constantes.IDEANEX) == null) ? linea.trim() : linea.trim() + datos.get(Constantes.IDEANEX);
-	    		break;
-	    	case 14:
-	    		linea = (datos.get(Constantes.DATAENVI) == null) ? linea.trim() : linea.trim() + datos.get(Constantes.DATAENVI);
-	    		break;
-	    	case 15:
-	    		linea = (datos.get(Constantes.HORENVI) == null) ? linea.trim() : linea.trim() + datos.get(Constantes.HORENVI);
-	    		break;
-	    	case 16:
-				if (datos.get(Constantes.DADA721) == null && fi == "") {
-					linea = linea.trim();
-				}
-				else {
-					salida = (ArrayList<String>) MetodosAux.checkLineSize(Constantes.DADA721, linea, fi, datos); 
-					linea = salida.get(0);
-					fi = salida.get(1);
-				}
-    			break;
-	    	case 17:
-				if (datos.get(Constantes.DADA722) == null && fi == "") {
-					linea = linea.trim();
-				}
-				else {
-					salida = (ArrayList<String>) MetodosAux.checkLineSize(Constantes.DADA722, linea, fi, datos); 
-					linea = salida.get(0);
-					fi = salida.get(1);
-				}
-    			break;
-	    	case 18:
-				if (datos.get(Constantes.DADA723) == null && fi == "") {
-					linea = linea.trim();
-				}
-				else {
-					salida = (ArrayList<String>) MetodosAux.checkLineSize(Constantes.DADA723, linea, fi, datos); 
-					linea = salida.get(0);
-					fi = salida.get(1);
-				}
-    			break;
-	    	case 19:
-				if (datos.get(Constantes.DADA724) == null && fi == "") {
-					linea = linea.trim();
-				}
-				else {
-					salida = (ArrayList<String>) MetodosAux.checkLineSize(Constantes.DADA724, linea, fi, datos); 
-					linea = salida.get(0);
-					fi = salida.get(1);
-				}
-    			break;
-	    	case 20:
-	    		//Revisar nombre variable
-				if (datos.get(Constantes.DADA725) == null && fi == "") {
-					linea = linea.trim();
-				}
-				else {
-					salida = (ArrayList<String>) MetodosAux.checkLineSize(Constantes.DADA725, linea, fi, datos); 
-					linea = salida.get(0);
-					fi = salida.get(1);
-				}
-    		break;
-			default:
-				break;
-			}
+	    	
+	    	linea = jmailtxt.processJMAILTXT(linea, contadorLinea);
+
+	    	if (!jmailtxt.getAvisos().equals("")) {
+    			Avisos.LOGGER.log(Level.INFO, jmailtxt.getAvisos());
+    			writerCortex.write(jmailtxt.getAvisos());
+    	    	writerCortex.newLine();  
+	    	}
 	    	System.out.println(Constantes.WRITING + linea);
-	    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
+	    	writerCortex.write(linea);
 	    	writerCortex.newLine();
 	    }
+	    	    
+	    masMail = jmailtxt.isMasMail();
 	    lectorMAILTXT.close();
 	    writeReports(datos, writerCortex, pasoE, letraPaso);
 	    writeIF(datos, writerCortex);
