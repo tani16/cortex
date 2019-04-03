@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import com.cortex.project.templates.JFICHSAL;
+import com.cortex.project.templates.JFTPSEND;
 import com.cortex.project.templates.JMAILTXT;
 
 
@@ -490,128 +491,25 @@ public class WriterPasos {
 	    String[] valor = {"TSF01", numeroPaso};
 	    histPasos.put(numeroPasoE, valor);
 	    int contadorLinea = 0;
-	    int spaces = 0;
 	    //----------------Fichero de plantilla JFTPSEND--------------------------
 	    FileReader ficheroJFTPSEND = TratamientoDeFicheros.openTemplate(Constantes.JFTPSEND_TEMPLATE);
 	    BufferedReader lectorJFTPSEND = TratamientoDeFicheros.readerTemplate(ficheroJFTPSEND);	
 	    //----------------Método---------------------------------------------
+	    JFTPSEND jftpsend = new JFTPSEND(letraPaso, numeroPaso, pasoE, datos);
 	    while((linea = lectorJFTPSEND.readLine()) != null) {
 	    	contadorLinea ++;
-	    	switch (contadorLinea) {
-	    	case 2:
-	    		linea = linea.replace(Constantes.STEP_START, "//" + letraPaso + numeroPaso);
-				break;
-	    	case 3:
-	    		//Calculamos cuantos espacios hay que añadir detrás para que no se muevan los comentarios de posición
-	    		StringBuilder des = new StringBuilder("DES=" + datos.get("DES") + ",");
-	    		spaces = 40 - des.length();
-	    		for (int j = 0; j < spaces; j++) {
-	    			des.append(" ");
-	    		}
-	    		linea = linea.replace(Constantes.CAMPO_DESTINO, des);
-				break;
-	    	case 4:
-	    		String dsn = metodosAux.infoFTP(pasoE, letraPaso, datos.get("FHOST"));
-	    		if (dsn.equals(Constantes.EMPTY)){
-	    			String mensaje =  letraPaso + String.valueOf(pasoE) + " // DSN Fichero no encontrada ";
-	    			Avisos.LOGGER.log(Level.INFO, mensaje);
-	    			System.out.println(Constantes.LOG_REVISAR_FICHERO);
-	    	    	writerCortex.write(Constantes.LOG_REVISAR_FICHERO);
-	    	    	writerCortex.newLine();
-	    		}
-	    		if(dsn.contains(Constantes.CORTEX)) {
-	    			Avisos.LOGGER.log(Level.INFO,Constantes.LOG_LIBRERIA_CORTEX);
-	    			writerCortex.write(Constantes.LOG_LIBRERIA_CORTEX);
-	    	    	writerCortex.newLine();
-	    		}
-	    	    StringBuilder host = new StringBuilder("HOST=Z." + dsn + ",");
-	    	    spaces = 40 - host.length();  		
-	    		for (int j = 0; j < spaces; j++) {
-	    			host.append(" ");
-	    		}
-	    		linea = linea.replace("HOST=,                                  ", host);
-	    		break;
-	    	case 5:
-	    		if(datos.get(Constantes.FDEST).contains("_")) {
-	    			String aux = "'" + datos.get(Constantes.FDEST) + "'";
-	    			datos.replace(Constantes.FDEST, aux);
-	    		}
-	    		if(datos.get(Constantes.FDEST).contains("_&")) {
-//	    			String aux = datos.get("FDEST");
-//	    			aux = aux.replaceAll("_&", "-&");
-//	    			datos.replace("FDEST", aux);
-	    			String mensaje = letraPaso + String.valueOf(pasoE) + " // Revisar fichero -  contiene _& ";
-					Avisos.LOGGER.log(Level.INFO, mensaje);
-	    			System.out.println(Constantes.LOG_FICHERO_CON);
-	    	    	writerCortex.write(Constantes.LOG_FICHERO_CON);
-	    	    	writerCortex.newLine();
-	    		}
-	    		if(datos.get(Constantes.FDEST).contains("*")) {
-	    			System.out.println(Constantes.LOG_FICHERO_ASTERISCOS);
-			    	writerCortex.write(Constantes.LOG_FICHERO_ASTERISCOS);
-			    	writerCortex.newLine();
-			    	String mensaje = letraPaso + String.valueOf(pasoE) + " // Fichero con * - Avisar Aplicacion ";
-					Avisos.LOGGER.log(Level.INFO, mensaje);
-	    		}
-	    		StringBuilder fit = new StringBuilder("FIT=" + datos.get(Constantes.FDEST));
-	    		if(datos.containsKey("MSG") || datos.containsKey("DIR")) {
-	    			fit.append(",");
-	    		}
-	    		spaces = 40 - fit.length();  		
-	    		for (int j = 0; j < spaces; j++) {
-	    			fit.append(" ");
-	    		}
-	    		String aux = linea = linea.replace(Constantes.CAMPO_FIT, fit);
-	    		if(aux.length() > 72) {
-	    			linea = linea.replace("FIT=nomfichred                          <== nombre fich red", fit);
-	    		}else {
-	    			linea = linea.replace(Constantes.CAMPO_FIT, fit);
-	    		}
-	    		break;
-	    	case 6:
-	    		if(datos.containsKey("DIR")) {
-	    			linea = linea.replace("//*", "// "); 
-	    			StringBuilder dir = new StringBuilder(Constantes.DIR_EQUALS + datos.get("DIR") + "'");
-		    		if(datos.containsKey("MSG")) {
-		    			dir.append(",");
-		    		}
-		    		spaces = 40 - dir.length();  		
-		    		for (int j = 0; j < spaces; j++) {
-		    			dir.append(" ");
-		    		}
-		    		linea = linea.replace(Constantes.CAMPO_DIR, dir);
-	    		}
-	    		break;
-	    	case 7:
-	    		if(datos.containsKey("MSG")) {
-	    			linea = linea.replace("//*", "// ");
-	    			if(!datos.containsKey("MSG2")) { 
-		    			StringBuilder msg = new StringBuilder(Constantes.MSG_EQUALS + datos.get("MSG").replace("-", ",") + "'");
-			    		spaces = 40 - msg.length();  		
-			    		for (int j = 0; j < spaces; j++) {
-			    			msg.append(" ");
-			    		}
-			    		linea = linea.replace(Constantes.CAMPO_MSG, msg);
-	    			}else {
-	    				StringBuffer msg = new StringBuffer(Constantes.MSG_EQUALS + datos.get("MSG").replace("-", ",")
-	    						+ datos.get("MSG2").trim().replace("-", ",") + "'");
-	    				if (msg.length() > 68) {
-	    					String mensaje = letraPaso + String.valueOf(pasoE) + " // Variable MSG excede de la longitud permitida - " + msg;
-	    					Avisos.LOGGER.log(Level.INFO, mensaje);
-	    	    			System.out.println(Constantes.LOG_REVISAR_LONGITUD);
-	    	    	    	writerCortex.write(Constantes.LOG_REVISAR_LONGITUD);
-	    	    	    	writerCortex.newLine();
-	    				}
-	    				linea = linea.replace(Constantes.CAMPO_MSG_2, msg);
-	    			}
-	    		}
-	    		break;
-			default:
-				break;
-			}
+	    	
+	    	linea = jftpsend.processJFTPSEND(linea, contadorLinea);
+	    	
+	    	if (!jftpsend.getAvisos().equals("")) {
+    			Avisos.LOGGER.log(Level.INFO, jftpsend.getAvisos());
+    			writerCortex.write(jftpsend.getAvisos());
+    	    	writerCortex.newLine();  
+	    	}
 	    	System.out.println(Constantes.WRITING + linea);
-	    	writerCortex.write(linea.replaceAll(Constantes.END_SPACES,""));
+	    	writerCortex.write(linea);
 	    	writerCortex.newLine();
+	    	
 	    }
 	    lectorJFTPSEND.close();		
 	    writeReports(datos, writerCortex, pasoE, letraPaso);
