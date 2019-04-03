@@ -31,7 +31,6 @@ public class JftpsendTest {
 	// Prueba CLI11H
 	JFTPSEND jftpsend1 = new JFTPSEND(letraPaso, numeroPaso, pasoE, datos);
 
-		
 	@Test
 	public void jftpsendLine2Test() {
 		entrada  = "//---    EXEC FTPSEND,                                                 ";
