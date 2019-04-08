@@ -47,7 +47,7 @@ public final class Constantes {
 	static final String LECTURA = "Lectura";
 	static final String MGMTCLAS = "MGMTCLAS";
 	static final String REPORT_KEY = "ReportKey";
-	static final String SORTIDA = "SORTIDA=";
+	static final String SORTIDA_EQUALS = "SORTIDA=";
 	static final String PROC = "PROC";
 	static final String CNTL = "CNTL";
 	static final String BORRAR = "Borrar";
@@ -303,7 +303,7 @@ public final class Constantes {
 
 
 	public static String getSortida() {
-		return SORTIDA;
+		return SORTIDA_EQUALS;
 	}
 
 

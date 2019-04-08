@@ -365,7 +365,7 @@ public class MetodosAux {
 			ficheros[0] = ficheros[0].replace("ENTRADA=", Constantes.EMPTY);
 			
 			if(ficheros[0].contains(Constantes.SORTIDA1)) {
-				infoFich = infoFichero(pasoE, letraPaso, ficheros[0].replace(Constantes.SORTIDA1, Constantes.EMPTY));
+				infoFich = infoFichero(pasoE, letraPaso, ficheros[0].replace(Constantes.SORTIDA_EQUALS, Constantes.EMPTY));
 				if (infoFich.containsKey(Constantes.MGMTCLAS)){
 					datos.put(Constantes.MGMTCLAS, infoFich.get(Constantes.MGMTCLAS));
 				}
